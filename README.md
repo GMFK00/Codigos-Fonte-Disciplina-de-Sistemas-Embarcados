@@ -11,7 +11,7 @@ O repositório está organizado de acordo com as avaliações da disciplina:
 
 ---
 <details>
-<summary><b style="font-size: 16pt; cursor: pointer">Nota 1 - Trabalho 1: Controle de LED WS2812 Integrado com Menu Serial</b></summary>
+<summary><b style="font-size: 1.4rem; cursor: pointer">Nota 1 - Trabalho 1: Controle de LED WS2812 Integrado com Menu Serial</b></summary>
 Este é o primeiro projeto da disciplina, servindo como uma introdução ao controle de periféricos integrados e à interação com o usuário via comunicação serial na plataforma ESP32-S3.
 
 ### 🎯 Objetivo
