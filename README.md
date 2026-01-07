@@ -61,5 +61,6 @@ As pastas para o **Trabalho 2**, **Trabalho 3** e as demais (`Nota2`, `Nota3`) s
 *   **João Vítor Coelho Ferreira**
 *   **João Vitor Costa Leite Virgínio da Silva**
 *   **José Ribamar Cerqueira Muniz**
+*   **Khalil Ravikson Alcantara do Carmo**
 *   **Luís Victor Belo Ferreira**
 *   **Rafael José Nogueira de Alencar**
