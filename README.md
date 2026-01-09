@@ -96,7 +96,7 @@ O projeto é dividido em três nós principais:
     *   Ao mover um slider no site, o display OLED e o LED remoto atualizam instantaneamente.
 *   **Controle Centralizado:** Botão "Power" (Interruptor) que habilita/desabilita o sistema tanto fisicamente quanto via web.
 *   **Anti-Flooding:** Implementação de *Rate Limiting* (Limitador de Taxa) para evitar congestionamento da rede MQTT/WebSocket durante ajustes rápidos.
-*   **Dashboard Rico:** A interface Web calcula e exibe automaticamente a cor em formatos HEX, RGB, CMYK, HSV e HSL.
+*   **Dashboard Rico:** A interface Web calcula e exibe automaticamente a cor em formatos HEX.
 
 ### 🚀 Como Usar
 
@@ -106,14 +106,14 @@ O projeto é dividido em três nós principais:
 4.  **Acesso:**
     *   Abra o Serial Monitor do Controlador para descobrir o IP atribuído.
     *   Acesse esse IP pelo navegador do celular ou PC conectado à mesma rede.
-5.  **Operação:** Controle a cor e o brilho pelo site ou pelos botões físicos e observe a sincronização em tempo real entre as três pontas (Site, Display, LED).
+5.  **Operação:** Controle a cor e o brilho pelo site ou pelos botões físicos e observe a sincronização entre as três pontas (Site, Display, LED).
 </details>
 
 ---
 
 ## Próximos Trabalhos
 
-A pasta para o **Trabalho 3** e as demais (`Nota2`, `Nota3`) serão preenchidas conforme os próximos projetos da disciplina forem desenvolvidos.
+A pasta para o **Trabalho 3** e as demais (`Nota 2`, `Nota 3`) serão preenchidas conforme os próximos projetos da disciplina forem desenvolvidos.
 
 ## Autores
 
