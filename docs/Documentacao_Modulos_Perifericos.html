@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação de Periféricos e Módulos</title>
+    <style>
+        :root {
+            --bg-body: #0a0a0a;
+            --bg-panel: #141414;
+            --bg-header: #000000;
+            --text-main: #e0e0e0;
+            --text-dim: #909090;
+            --accent: #00e676;
+            --border: #2a2a2a;
+            
+            /* Paleta de Cores das Tags */
+            --c-power: #d32f2f;   /* Vermelho */
+            --c-gnd: #1976d2;     /* Azul Escuro */
+            --c-gpio: #388e3c;    /* Verde Escuro */
+            
+            --t-touch: #00c853;   /* Verde Claro (Touch) */
+            --t-adc: #ab47bc;     /* Roxo (ADC) */
+            --t-rtc: #ff7043;     /* Laranja (RTC) */
+            --t-spi: #fbc02d;     /* Amarelo (FSPI/SPI) */
+            --t-uart: #7e57c2;    /* Violeta (UART) */
+            --t-i2c: #29b6f6;     /* Ciano (I2C) */
+            --t-jtag: #e53935;    /* Vermelho (JTAG) */
+            --t-sys: #78909c;     /* Cinza Azulado (System) */
+            --t-usb: #0277bd;     /* Azul USB */
+            --t-strap: #ec407a;   /* Rosa (Strapping/Boot) */
+            --t-rf: #ff0055;      /* Rosa RF */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Consolas', 'Monaco', 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 40px;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* HEADER */
+        header {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--accent);
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .model-info {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        /* COMPONENTES */
+        .section-title {
+            font-size: 1.8rem;
+            margin: 60px 0 20px 0;
+            padding-left: 15px;
+            border-left: 4px solid var(--accent);
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .component-meta {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            font-weight: normal;
+            background: #222;
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .pinout-container {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+
+        .pin-side {
+            flex: 1;
+            min-width: 450px;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .side-title {
+            text-align: left;
+            background: #1a1a1a;
+            padding: 15px 20px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--border);
+            color: #fff;
+            text-transform: uppercase;
+            font-size: 1rem;
+        }
+
+        .pin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .pin-table tr { border-bottom: 1px solid var(--border); }
+        .pin-table tr:hover { background: #222; }
+        .pin-table tr:last-child { border-bottom: none; }
+
+        .pin-table td { padding: 10px 15px; vertical-align: middle; }
+
+        /* Colunas da Tabela */
+        .col-id { width: 80px; text-align: center; font-weight: bold; font-size: 1rem; border-right: 1px solid var(--border); }
+        .col-main { width: 120px; font-weight: bold; color: #fff; }
+        .col-desc { color: var(--text-dim); font-size: 0.85rem; }
+        .col-funcs { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+
+        /* Estilização das Tags */
+        .tag {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+            white-space: nowrap;
+        }
+
+        /* Cores Específicas */
+        .b-i2c { background: var(--t-i2c); color: #000; text-shadow: none; }
+        .b-spi { background: var(--t-spi); color: #000; text-shadow: none; }
+        .b-sys { background: var(--t-sys); color: #000; text-shadow: none; }
+        .b-rtc { background: var(--t-rtc); }
+        .b-rf  { background: var(--t-rf); }
+        .b-warn{ background: var(--t-jtag); } /* Vermelho para avisos */
+        
+        .pwr-pin { color: var(--c-power); }
+        .gnd-pin { color: var(--c-gnd); }
+        .gpio-pin { color: var(--c-gpio); }
+
+        .note {
+            margin: 15px 20px;
+            padding: 10px;
+            background: rgba(211, 47, 47, 0.1);
+            border-left: 3px solid var(--c-power);
+            color: #ff8a80;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Módulos Periféricos</h1>
+        <div class="model-info">Documentação Técnica de Pinagem e Protocolos &bull; Sistemas Embarcados</div>
+    </header>
+
+    <!-- 1. DS3231 RTC -->
+    <h2 class="section-title">
+        Módulo RTC DS3231
+        <span class="component-meta">Protocolo: I2C &bull; 3.3V - 5V</span>
+    </h2>
+    <div class="pinout-container">
+        <div class="pin-side">
+            <div class="side-title">Pinagem do Módulo (ZS-042)</div>
+            <table class="pin-table">
+                <tr>
+                    <td class="col-id gpio-pin">32K</td>
+                    <td class="col-main">32kHz Out</td>
+                    <td class="col-desc">Saída de clock de precisão (Geralmente não usado).</td>
+                    <td><span class="tag b-sys">CLOCK</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gpio-pin">SQW</td>
+                    <td class="col-main">Interrupt</td>
+                    <td class="col-desc">Square Wave / Output Alarm. Usado para acordar o ESP32 (Wakeup).</td>
+                    <td><span class="tag b-rtc">ALARM / INT</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gpio-pin">SCL</td>
+                    <td class="col-main">Serial Clock</td>
+                    <td class="col-desc">Clock do barramento I2C.</td>
+                    <td><span class="tag b-i2c">I2C SCL</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gpio-pin">SDA</td>
+                    <td class="col-main">Serial Data</td>
+                    <td class="col-desc">Dados do barramento I2C.</td>
+                    <td><span class="tag b-i2c">I2C SDA</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id pwr-pin">VCC</td>
+                    <td class="col-main">Power</td>
+                    <td class="col-desc">Alimentação (3.3V recomendado para ESP32).</td>
+                    <td><span class="tag b-sys">POWER</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gnd-pin">GND</td>
+                    <td class="col-main">Ground</td>
+                    <td class="col-desc">Referência de terra.</td>
+                    <td><span class="tag b-sys">GND</span></td>
+                </tr>
+            </table>
+            <div class="note">
+                <strong>Nota Importante:</strong> O pino SQW é Active-LOW (vai para GND quando o alarme dispara). Use INPUT_PULLUP no microcontrolador ou um resistor de pull-up externo.
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. nRF24L01+ -->
+    <h2 class="section-title">
+        Módulo RF nRF24L01+ PA/LNA
+        <span class="component-meta">Protocolo: SPI &bull; 3.3V APENAS</span>
+    </h2>
+    <div class="pinout-container">
+        <div class="pin-side">
+            <div class="side-title">Pinagem (Header 2x4)</div>
+            <table class="pin-table">
+                <tr>
+                    <td class="col-id gnd-pin">1. GND</td>
+                    <td class="col-main">Ground</td>
+                    <td class="col-desc">Referência de terra (Borda Branca no módulo).</td>
+                    <td><span class="tag b-sys">GND</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id pwr-pin">2. VCC</td>
+                    <td class="col-main">3.3V Input</td>
+                    <td class="col-desc">Alimentação. ⚠ NÃO LIGAR EM 5V.</td>
+                    <td><span class="tag b-warn">MAX 3.6V</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gpio-pin">3. CE</td>
+                    <td class="col-main">Chip Enable</td>
+                    <td class="col-desc">Controla modo RX/TX. (GPIO Digital).</td>
+                    <td><span class="tag b-rf">CONTROL</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gpio-pin">4. CSN</td>
+                    <td class="col-main">Chip Select</td>
+                    <td class="col-desc">Seleção do escravo SPI (Active LOW).</td>
+                    <td><span class="tag b-spi">SPI SS</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gpio-pin">5. SCK</td>
+                    <td class="col-main">SPI Clock</td>
+                    <td class="col-desc">Clock do barramento SPI.</td>
+                    <td><span class="tag b-spi">SPI CLK</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gpio-pin">6. MOSI</td>
+                    <td class="col-main">Master Out</td>
+                    <td class="col-desc">Dados saindo do ESP32 para o Rádio.</td>
+                    <td><span class="tag b-spi">SPI MOSI</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gpio-pin">7. MISO</td>
+                    <td class="col-main">Master In</td>
+                    <td class="col-desc">Dados saindo do Rádio para o ESP32.</td>
+                    <td><span class="tag b-spi">SPI MISO</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gpio-pin">8. IRQ</td>
+                    <td class="col-main">Interrupt</td>
+                    <td class="col-desc">Opcional. Sinaliza recebimento de dados.</td>
+                    <td><span class="tag b-sys">INT</span></td>
+                </tr>
+            </table>
+            <div class="note">
+                <strong>Dica de Hardware:</strong> É altamente recomendado soldar um capacitor eletrolítico (10uF a 100uF) diretamente entre os pinos VCC e GND do módulo para evitar falhas de transmissão.
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Display OLED & DHT11 -->
+    <h2 class="section-title">
+        Sensores e Interface
+        <span class="component-meta">Interface de Usuário e Leitura Ambiental</span>
+    </h2>
+    <div class="pinout-container">
+        
+        <!-- OLED -->
+        <div class="pin-side">
+            <div class="side-title">Display OLED 0.96" (SSD1306)</div>
+            <table class="pin-table">
+                <tr>
+                    <td class="col-id gnd-pin">GND</td>
+                    <td class="col-main">Ground</td>
+                    <td class="col-desc">Terra.</td>
+                    <td><span class="tag b-sys">GND</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id pwr-pin">VCC</td>
+                    <td class="col-main">Power</td>
+                    <td class="col-desc">3.3V ou 5V.</td>
+                    <td><span class="tag b-sys">POWER</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gpio-pin">SCL</td>
+                    <td class="col-main">Clock</td>
+                    <td class="col-desc">I2C Serial Clock.</td>
+                    <td><span class="tag b-i2c">I2C SCL</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gpio-pin">SDA</td>
+                    <td class="col-main">Data</td>
+                    <td class="col-desc">I2C Serial Data.</td>
+                    <td><span class="tag b-i2c">I2C SDA</span></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- DHT11 -->
+        <div class="pin-side">
+            <div class="side-title">Sensor DHT11 (Módulo PCB)</div>
+            <table class="pin-table">
+                <tr>
+                    <td class="col-id pwr-pin">VCC / +</td>
+                    <td class="col-main">Power</td>
+                    <td class="col-desc">3.3V a 5V.</td>
+                    <td><span class="tag b-sys">POWER</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gpio-pin">DATA / OUT</td>
+                    <td class="col-main">Signal</td>
+                    <td class="col-desc">Comunicação Digital Single-Wire.</td>
+                    <td><span class="tag b-sys">DIGITAL</span></td>
+                </tr>
+                <tr>
+                    <td class="col-id gnd-pin">GND / -</td>
+                    <td class="col-main">Ground</td>
+                    <td class="col-desc">Terra.</td>
+                    <td><span class="tag b-sys">GND</span></td>
+                </tr>
+            </table>
+            <div class="note" style="border-left-color: var(--t-sys); background: rgba(120, 144, 156, 0.1); color: var(--text-dim);">
+                <strong>Atenção:</strong> A pinagem do DHT11 pode variar dependendo do fabricante do módulo (PCB). Sempre verifique as etiquetas (+, -, S) na placa.
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
