@@ -111,8 +111,6 @@ O projeto é dividido em três nós principais:
 
 ---
 
----
-
 ## Nota 1 - Trabalho 3: WSN de Monitoramento Ambiental Low-Power com Node-RED
 <details>
 <summary>Nota 1 - Trabalho 3</summary>
