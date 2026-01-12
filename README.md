@@ -111,8 +111,6 @@ O projeto é dividido em três nós principais:
 
 ---
 
----
-
 ## Nota 1 - Trabalho 3: WSN de Monitoramento Ambiental Low-Power com Node-RED
 <details>
 <summary>Nota 1 - Trabalho 3</summary>
@@ -170,7 +168,7 @@ Desenvolver uma arquitetura completa de IoT composta por:
 
 ## Próximos Trabalhos
 
-A pasta para o **Trabalho 3** e as demais (`Nota 2`, `Nota 3`) serão preenchidas conforme os próximos projetos da disciplina forem desenvolvidos.
+As demais pastas (`Nota 2`, `Nota 3`) serão preenchidas conforme os próximos projetos da disciplina forem desenvolvidos.
 
 ## Autores
 
