@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Implementação - Controle LED WS2812</title>
+    <style>
+        :root {
+            --bg-sidebar: #1e1e1e;
+            --bg-content: #121212;
+            --bg-card: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #007acc;
+            --border: #333333;
+            --code-bg: #2d2d2d;
+            --code-text: #d4d4d4;
+            --sidebar-width: 300px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-content);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* --- SIDEBAR --- */
+        nav {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) var(--bg-sidebar);
+        }
+
+        nav h1 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        nav .subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        nav h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        nav ul { list-style: none; }
+        
+        nav a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 6px 0;
+            transition: 0.2s;
+        }
+
+        nav a:hover {
+            color: #fff;
+            padding-left: 5px;
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            margin-left: var(--sidebar-width);
+            padding: 40px 60px;
+            width: 100%;
+            max-width: 1600px;
+        }
+
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin: 30px 0 15px 0;
+            color: var(--accent);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin: 20px 0 10px 0;
+            color: #fff;
+            background: #252526;
+            padding: 8px 12px;
+            border-left: 4px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        p { margin-bottom: 15px; color: var(--text-secondary); }
+
+        /* --- TABLES --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #252526;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #2a2a2a; }
+
+        /* --- BADGES --- */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-right: 8px;
+        }
+        .b-hw { background: #d35400; color: #fff; }
+        .b-soft { background: #2980b9; color: #fff; }
+        .b-net { background: #4b2a69; color: #fff; }
+        .b-warn { background: #c0392b; color: #fff; }
+
+        /* --- LISTS --- */
+        ul { margin-left: 20px; margin-bottom: 20px; color: var(--text-secondary); }
+        li { margin-bottom: 8px; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1000px) {
+            body { flex-direction: column; }
+            nav { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--border); }
+            main { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA LATERAL -->
+    <nav>
+        <h1>Relatório de Implementação</h1>
+        <div class="subtitle">Trabalho 1: Controle de LED WS2812</div>
+
+        <h3>Introdução</h3>
+        <ul>
+            <li><a href="#objetivo">Objetivo e Escopo</a></li>
+            <li><a href="#materiais">Materiais Utilizados</a></li>
+        </ul>
+
+        <h3>Desenvolvimento</h3>
+        <ul>
+            <li><a href="#logica">Lógica de Controle</a></li>
+            <li><a href="#serial">Manipulação Serial</a></li>
+        </ul>
+
+        <h3>Resultados</h3>
+        <ul>
+            <li><a href="#testes">Testes Funcionais</a></li>
+            <li><a href="#conclusao">Conclusão</a></li>
+        </ul>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+        
+        <!-- 1. OBJETIVO -->
+        <section id="objetivo">
+            <h2>Objetivo e Escopo</h2>
+            <p>O objetivo deste primeiro trabalho foi familiarizar-se com o ambiente de desenvolvimento para o ESP32-S3 e o controle de periféricos integrados. O foco específico foi o acionamento do LED RGB (WS2812) presente na placa de desenvolvimento, utilizando comunicação Serial para interação com o usuário.</p>
+            <p>O sistema deveria permitir a seleção de cores pré-definidas, o ajuste da intensidade luminosa (brilho) e o desligamento do LED, tudo através de comandos de texto.</p>
+        </section>
+
+        <!-- 2. MATERIAIS -->
+        <section id="materiais">
+            <h2>Materiais Utilizados</h2>
+            <table>
+                <thead><tr><th>Componente</th><th>Especificação</th><th>Aplicação</th></tr></thead>
+                <tbody>
+                    <tr><td>ESP32-S3 DevKit</td><td>YD-ESP32-S3 (Clone VCC-GND)</td><td>Microcontrolador principal.</td></tr>
+                    <tr><td>LED RGB</td><td>WS2812B (Integrado)</td><td>Atuador luminoso conectado ao GPIO 48.</td></tr>
+                    <tr><td>Cabo USB</td><td>USB-C</td><td>Alimentação e comunicação Serial.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 3. DESENVOLVIMENTO -->
+        <section id="logica">
+            <h2>Lógica de Controle</h2>
+            <p>Para controlar o LED WS2812, que utiliza um protocolo de comunicação de um fio sensível ao tempo (timing-sensitive), utilizou-se a biblioteca <code>ESP32_WS2812_Lib</code>. Esta biblioteca abstrai a complexidade do uso do periférico RMT (Remote Control Transceiver) do ESP32.</p>
+            
+            <h4>Estrutura de Dados</h4>
+            <p>Foi implementada uma matriz bidimensional <code>uint8_t colors[7][3]</code> contendo os valores RGB para as 7 cores principais (Vermelho, Verde, Azul, Amarelo, Magenta, Ciano, Branco). Isso permite que o código selecione a cor baseada apenas em um índice inteiro, simplificando a lógica do menu.</p>
+        </section>
+
+        <section id="serial">
+            <h2>Manipulação Serial e Menu</h2>
+            <p>A interação com o usuário foi construída baseada em um loop de verificação de buffer serial.</p>
+            
+            <h4>Parsing de Comandos</h4>
+            <p>O comando <code>Serial.readStringUntil('\n')</code> foi utilizado para capturar a entrada do usuário. Isso exige que o Monitor Serial esteja configurado para enviar o caractere de nova linha (Newline) ao final do envio.</p>
+
+            <h4>Fluxo de Bloqueio (Opção 8)</h4>
+            <p>Uma particularidade da implementação é a opção de ajuste de brilho (Opção 8). Ao ser selecionada, o fluxo do programa entra em um loop <code>while (Serial.available() == 0)</code>. Isso torna o sistema bloqueante temporariamente, aguardando obrigatoriamente que o usuário digite o valor do brilho (0-255) antes de retornar ao menu principal.</p>
+        </section>
+
+        <!-- 4. RESULTADOS -->
+        <section id="testes">
+            <h2>Testes Funcionais</h2>
+            <p>O sistema foi testado enviando sequências de comandos via Monitor Serial do Arduino IDE.</p>
+            <ul>
+                <li><strong>Troca de Cores:</strong> A resposta do LED foi imediata ao envio dos números 1 a 7, com as cores correspondendo corretamente aos valores RGB definidos na matriz.</li>
+                <li><strong>Ajuste de Brilho:</strong> O envio do comando 8 seguido de valores extremos (10 e 255) demonstrou a capacidade de dimerização do LED sem alteração da cor base (crominância).</li>
+                <li><strong>Validação de Entrada:</strong> O uso de <code>Serial.parseInt()</code> na rotina de brilho filtrou corretamente caracteres não numéricos.</li>
+            </ul>
+        </section>
+
+        <section id="conclusao">
+            <h2>Conclusão</h2>
+            <p>O trabalho cumpriu com êxito o objetivo de introdução à plataforma ESP32-S3. A utilização do LED integrado (GPIO 48) eliminou a necessidade de circuitos externos, permitindo foco na lógica de firmware e comunicação Serial. A implementação demonstrou como criar interfaces de usuário simples baseadas em texto para depuração e controle de dispositivos embarcados.</p>
+        </section>
+
+    </main>
+</body>
+</html>

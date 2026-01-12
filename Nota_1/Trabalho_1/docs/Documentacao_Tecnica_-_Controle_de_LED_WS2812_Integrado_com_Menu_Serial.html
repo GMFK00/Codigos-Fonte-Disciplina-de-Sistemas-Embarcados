@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação Técnica - Controle LED WS2812</title>
+    <style>
+        :root {
+            --bg-sidebar: #1e1e1e;
+            --bg-content: #121212;
+            --bg-card: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #007acc;
+            --border: #333333;
+            --code-bg: #2d2d2d;
+            --code-text: #d4d4d4;
+            --sidebar-width: 300px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-content);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* --- SIDEBAR --- */
+        nav {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) var(--bg-sidebar);
+        }
+
+        nav h1 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        nav .subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        nav h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        nav ul { list-style: none; }
+        
+        nav a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 6px 0;
+            transition: 0.2s;
+        }
+
+        nav a:hover {
+            color: #fff;
+            padding-left: 5px;
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            margin-left: var(--sidebar-width);
+            padding: 40px 60px;
+            width: 100%;
+            max-width: 1600px;
+        }
+
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin: 30px 0 15px 0;
+            color: var(--accent);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin: 20px 0 10px 0;
+            color: #fff;
+            background: #252526;
+            padding: 8px 12px;
+            border-left: 4px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        p { margin-bottom: 15px; color: var(--text-secondary); }
+
+        /* --- TABLES --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #252526;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #2a2a2a; }
+
+        /* --- CODE BLOCKS --- */
+        pre {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            color: var(--code-text);
+            font-size: 0.9rem;
+        }
+
+        .inline-code {
+            background-color: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #ce9178;
+        }
+
+        /* Syntax Highlighting Colors */
+        .kwd { color: #569cd6; font-weight: bold; } /* Keyword */
+        .type { color: #4ec9b0; } /* Type */
+        .func { color: #dcdcaa; } /* Function */
+        .var { color: #9cdcfe; } /* Variable */
+        .num { color: #b5cea8; } /* Number */
+        .str { color: #ce9178; } /* String */
+        .com { color: #6a9955; font-style: italic; } /* Comment */
+
+        /* --- BADGES --- */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-right: 8px;
+        }
+        .b-in { background: #206a5d; color: #fff; }
+        .b-out { background: #811a1a; color: #fff; }
+        .b-io { background: #a87718; color: #fff; }
+        .b-sys { background: #4b2a69; color: #fff; }
+
+        /* --- LISTS --- */
+        ul { margin-left: 20px; margin-bottom: 20px; color: var(--text-secondary); }
+        li { margin-bottom: 8px; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1000px) {
+            body { flex-direction: column; }
+            nav { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--border); }
+            main { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA LATERAL -->
+    <nav>
+        <h1>Controle LED WS2812</h1>
+        <div class="subtitle">Documentação Técnica v1.0</div>
+
+        <h3>Visão Geral</h3>
+        <ul>
+            <li><a href="#arquitetura">Arquitetura do Sistema</a></li>
+            <li><a href="#libs">Bibliotecas e Dependências</a></li>
+        </ul>
+
+        <h3>Hardware</h3>
+        <ul>
+            <li><a href="#hw-esp32">Pinout: ESP32-S3</a></li>
+        </ul>
+
+        <h3>Firmware</h3>
+        <ul>
+            <li><a href="#fw-structs">Estruturas de Dados</a></li>
+            <li><a href="#fw-funcs">Funções Principais</a></li>
+            <li><a href="#fw-aux">Funções Auxiliares</a></li>
+        </ul>
+
+        <h3>Interface</h3>
+        <ul>
+            <li><a href="#if-serial">Protocolo Serial</a></li>
+        </ul>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+        
+        <!-- 1. ARQUITETURA -->
+        <section id="arquitetura">
+            <h2>Arquitetura do Sistema</h2>
+            <p>O sistema consiste em um firmware embarcado no microcontrolador ESP32-S3 que gerencia um LED RGB endereçável (WS2812) integrado à placa. A interação com o usuário é realizada através de uma interface de linha de comando (CLI) via porta Serial (UART).</p>
+            <ul>
+                <li><strong>Entrada:</strong> Comandos ASCII enviados via Monitor Serial.</li>
+                <li><strong>Processamento:</strong> Interpretação de strings e máquina de estados simples.</li>
+                <li><strong>Saída:</strong> Sinal digital (RMT) para o LED WS2812 e feedback textual na Serial.</li>
+            </ul>
+        </section>
+
+        <!-- 2. BIBLIOTECAS -->
+        <section id="libs">
+            <h2>Bibliotecas e Dependências</h2>
+            <table>
+                <thead>
+                    <tr><th>Biblioteca</th><th>Cabeçalho</th><th>Utilização</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>ESP32 WS2812 Lib</td><td><code class="inline-code">ESP32_WS2812_Lib.h</code></td><td>Driver para controle de LEDs endereçáveis utilizando o periférico RMT do ESP32, garantindo precisão temporal sem bloquear o processador.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 3. HARDWARE -->
+        <section id="hw-esp32">
+            <h2>Hardware: ESP32-S3</h2>
+            <p>O projeto utiliza os recursos nativos da placa de desenvolvimento YD-ESP32-S3.</p>
+            <table>
+                <thead><tr><th>Macro</th><th>GPIO</th><th>Função</th><th>Descrição</th></tr></thead>
+                <tbody>
+                    <tr><td>LEDS_PIN</td><td>48</td><td><span class="badge b-out">RMT</span></td><td>Pino de dados conectado ao LED RGB WS2812 integrado (Built-in).</td></tr>
+                    <tr><td>UART0</td><td>43/44</td><td><span class="badge b-io">UART</span></td><td>Comunicação Serial via USB (TX/RX) para o console.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 4. FIRMWARE -->
+        <section id="fw-structs">
+            <h2>Firmware: Variáveis e Estruturas</h2>
+            
+            <h3>Matriz de Cores</h3>
+            <p>As cores disponíveis são armazenadas em uma matriz bidimensional constante, facilitando a seleção por índice.</p>
+            <pre><code><span class="type">uint8_t</span> colors[7][3] = {
+  {255, 0, 0},    <span class="com">// 0: Vermelho</span>
+  {0, 255, 0},    <span class="com">// 1: Verde</span>
+  {0, 0, 255},    <span class="com">// 2: Azul</span>
+  {255, 255, 0},  <span class="com">// 3: Amarelo</span>
+  {255, 0, 255},  <span class="com">// 4: Magenta</span>
+  {0, 255, 255},  <span class="com">// 5: Ciano</span>
+  {255, 255, 255} <span class="com">// 6: Branco</span>
+};</code></pre>
+
+            <h3>Variáveis de Estado</h3>
+            <table>
+                <thead><tr><th>Tipo</th><th>Nome</th><th>Descrição</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="type">int</span></td><td><code class="var">selectedColor</code></td><td>Índice da cor atual selecionada (0 a 6).</td></tr>
+                    <tr><td><span class="type">int</span></td><td><code class="var">brightness</code></td><td>Nível de brilho global do LED (0 a 255).</td></tr>
+                    <tr><td><span class="type">ESP32_WS2812</span></td><td><code class="var">strip</code></td><td>Objeto instanciado para controle do hardware.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="fw-funcs">
+            <h2>Firmware: Funções Principais</h2>
+
+            <h4><span class="func">void</span> setup()</h4>
+            <p>Inicializa os periféricos e define o estado inicial.</p>
+            <ul>
+                <li>Inicializa a Serial a 115200 baud.</li>
+                <li>Inicializa o objeto <code>strip</code>.</li>
+                <li>Define o brilho inicial.</li>
+                <li>Chama <code>atualizarLED()</code> e <code>exibirMenu()</code> pela primeira vez.</li>
+            </ul>
+
+            <h4><span class="func">void</span> loop()</h4>
+            <p>Executa o ciclo de leitura e interpretação de comandos.</p>
+            <ol>
+                <li>Verifica se há dados disponíveis no buffer Serial (<code>Serial.available()</code>).</li>
+                <li>Lê a string recebida até encontrar uma quebra de linha (<code>\n</code>).</li>
+                <li>Remove espaços em branco com <code>trim()</code>.</li>
+                <li>Compara a string recebida com as opções válidas ("1" a "9").</li>
+                <li>Executa a ação correspondente e atualiza o menu.</li>
+            </ol>
+        </section>
+
+        <section id="fw-aux">
+            <h2>Firmware: Funções Auxiliares</h2>
+
+            <h4><span class="func">void</span> exibirMenu()</h4>
+            <p>Envia via Serial o texto formatado do menu de opções, incluindo o status atual (cor selecionada e nível de brilho).</p>
+
+            <h4><span class="func">void</span> atualizarLED()</h4>
+            <p>Aplica as configurações ao hardware.</p>
+            <ul>
+                <li>Chama <code>strip.setLedColorData()</code> passando o índice do LED (0) e os valores R, G, B da matriz <code>colors</code> baseada em <code>selectedColor</code>.</li>
+                <li>Chama <code>strip.show()</code> para enviar o sinal RMT.</li>
+            </ul>
+
+            <h4><span class="func">void</span> apagarLED()</h4>
+            <p>Envia a cor preta (0, 0, 0) para o LED, efetivamente desligando-o, mas mantendo a variável de estado <code>selectedColor</code> inalterada para futuro acionamento.</p>
+        </section>
+
+        <!-- 5. INTERFACE -->
+        <section id="if-serial">
+            <h2>Protocolo de Interface Serial</h2>
+            <p>A comunicação ocorre em modo texto ASCII.</p>
+            
+            <h3>Configuração do Terminal</h3>
+            <ul>
+                <li><strong>Baud Rate:</strong> 115200</li>
+                <li><strong>Line Ending:</strong> Newline (NL) ou Both (NL & CR). O código espera o caractere <code>\n</code> para processar o comando.</li>
+            </ul>
+
+            <h3>Mapa de Comandos</h3>
+            <table>
+                <thead><tr><th>Comando</th><th>Ação</th><th>Parâmetros Adicionais</th></tr></thead>
+                <tbody>
+                    <tr><td><code class="inline-code">1</code> a <code class="inline-code">7</code></td><td>Selecionar Cor</td><td>Nenhum. Aplica a cor imediatamente.</td></tr>
+                    <tr><td><code class="inline-code">8</code></td><td>Ajustar Brilho</td><td>O sistema entra em modo de espera (bloqueante) aguardando um valor inteiro entre 0 e 255.</td></tr>
+                    <tr><td><code class="inline-code">9</code></td><td>Apagar</td><td>Desliga o LED.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+</body>
+</html>
