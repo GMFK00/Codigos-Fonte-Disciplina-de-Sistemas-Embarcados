@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Implementação - Digital Twin M2M</title>
+    <style>
+        :root {
+            --bg-sidebar: #1e1e1e;
+            --bg-content: #121212;
+            --bg-card: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #007acc;
+            --border: #333333;
+            --code-bg: #2d2d2d;
+            --code-text: #d4d4d4;
+            --sidebar-width: 300px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-content);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* --- SIDEBAR --- */
+        nav {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) var(--bg-sidebar);
+        }
+
+        nav h1 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        nav .subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        nav h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        nav ul { list-style: none; }
+        
+        nav a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 6px 0;
+            transition: 0.2s;
+        }
+
+        nav a:hover {
+            color: #fff;
+            padding-left: 5px;
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            margin-left: var(--sidebar-width);
+            padding: 40px 60px;
+            width: 100%;
+            max-width: 1600px;
+        }
+
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin: 30px 0 15px 0;
+            color: var(--accent);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin: 20px 0 10px 0;
+            color: #fff;
+            background: #252526;
+            padding: 8px 12px;
+            border-left: 4px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        p { margin-bottom: 15px; color: var(--text-secondary); }
+
+        /* --- TABLES --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #252526;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #2a2a2a; }
+
+        /* --- BADGES --- */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-right: 8px;
+        }
+        .b-hw { background: #d35400; color: #fff; }
+        .b-soft { background: #2980b9; color: #fff; }
+        .b-net { background: #4b2a69; color: #fff; }
+        .b-warn { background: #c0392b; color: #fff; }
+
+        /* --- LISTS --- */
+        ul { margin-left: 20px; margin-bottom: 20px; color: var(--text-secondary); }
+        li { margin-bottom: 8px; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1000px) {
+            body { flex-direction: column; }
+            nav { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--border); }
+            main { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA LATERAL -->
+    <nav>
+        <h1>Relatório de Implementação</h1>
+        <div class="subtitle">Trabalho 2: Digital Twin M2M</div>
+
+        <h3>Introdução</h3>
+        <ul>
+            <li><a href="#objetivo">Objetivo e Escopo</a></li>
+            <li><a href="#materiais">Materiais Utilizados</a></li>
+        </ul>
+
+        <h3>Desenvolvimento</h3>
+        <ul>
+            <li><a href="#montagem">Montagem do Hardware</a></li>
+            <li><a href="#logica-hibrida">Lógica Híbrida de Comunicação</a></li>
+            <li><a href="#sincronia">Desafios de Sincronia</a></li>
+        </ul>
+
+        <h3>Resultados</h3>
+        <ul>
+            <li><a href="#testes">Testes Realizados</a></li>
+            <li><a href="#conclusao">Conclusão</a></li>
+        </ul>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+        
+        <!-- 1. OBJETIVO -->
+        <section id="objetivo">
+            <h2>Objetivo e Escopo</h2>
+            <p>O objetivo deste trabalho foi desenvolver um sistema de Internet das Coisas (IoT) que demonstrasse a aplicação prática de um <strong>Gêmeo Digital (Digital Twin)</strong>. O sistema deveria permitir o controle de um atuador luminoso tanto por uma interface física quanto por uma interface web, mantendo o estado sincronizado em tempo real entre todas as pontas.</p>
+            <p>Além disso, o projeto exigiu a implementação de comunicação <strong>Machine-to-Machine (M2M)</strong> utilizando o protocolo MQTT, onde um microcontrolador (Controlador) envia comandos para outro microcontrolador distinto (Receptor/Atuador).</p>
+        </section>
+
+        <!-- 2. MATERIAIS -->
+        <section id="materiais">
+            <h2>Materiais Utilizados</h2>
+            <table>
+                <thead><tr><th>Componente</th><th>Quantidade</th><th>Aplicação</th></tr></thead>
+                <tbody>
+                    <tr><td>ESP32-S3 DevKit</td><td>2</td><td>Unidades de processamento (1 Controlador, 1 Receptor).</td></tr>
+                    <tr><td>Display OLED 0.96"</td><td>1</td><td>Interface visual local (I2C SSD1306).</td></tr>
+                    <tr><td>Push Button</td><td>4</td><td>Entradas de controle (Modo, Cima, Baixo, Power).</td></tr>
+                    <tr><td>Protoboard</td><td>1</td><td>Montagem do circuito do Controlador.</td></tr>
+                    <tr><td>Broker MQTT</td><td>1</td><td>Software Eclipse Mosquitto rodando em PC local.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 3. MONTAGEM -->
+        <section id="montagem">
+            <h2>Montagem do Hardware</h2>
+            
+            <h4>Nó Controlador</h4>
+            <p>O Controlador foi montado em protoboard. Os quatro botões foram configurados em modo <code>INPUT_PULLUP</code> interno, dispensando resistores externos. O display OLED utiliza o barramento I2C nos pinos padrão do ESP32-S3 (SDA: 8, SCL: 9).</p>
+
+            <h4>Nó Receptor</h4>
+            <p>Para o Receptor, não houve necessidade de montagem externa, pois o projeto utiliza o <strong>LED RGB endereçável (WS2812)</strong> já integrado à placa de desenvolvimento ESP32-S3 (GPIO 48). Isso simplificou o circuito e focou o esforço na implementação do protocolo de comunicação.</p>
+        </section>
+
+        <!-- 4. LÓGICA HÍBRIDA -->
+        <section id="logica-hibrida">
+            <h2>Lógica Híbrida de Comunicação</h2>
+            <p>Uma das principais inovações deste projeto foi a implementação de uma "ponte" de protocolos no ESP32 Controlador.</p>
+            
+            <h4><span class="badge b-net">WebSocket</span> UI em Tempo Real</h4>
+            <p>Para a interface Web, o protocolo MQTT seria inviável diretamente no navegador sem o uso de websockets encapsulados. Optou-se por usar uma conexão <strong>WebSocket nativa (porta 81)</strong> servida pelo próprio ESP32. Isso garante latência mínima para a atualização dos sliders na tela do celular.</p>
+
+            <h4><span class="badge b-net">MQTT</span> Controle M2M</h4>
+            <p>Para a comunicação entre os ESP32, utilizou-se o <strong>MQTT (porta 1883)</strong>. O Controlador atua como um "tradutor": ele recebe intenções do usuário (via botão físico ou via WebSocket) e as traduz em mensagens MQTT publicadas no tópico <code>laboratorio/led</code>, que são consumidas pelo Receptor.</p>
+        </section>
+
+        <!-- 5. DESAFIOS -->
+        <section id="sincronia">
+            <h2>Desafios de Implementação</h2>
+
+            <h4><span class="badge b-warn">Anti-Flooding</span> Rate Limiting</h4>
+            <p>Durante os testes iniciais, observou-se que arrastar o slider na interface web gerava centenas de mensagens por segundo. Isso causava o travamento do stack TCP/IP do ESP32 e desconexões do Broker MQTT.</p>
+            <ul>
+                <li><strong>Solução:</strong> Implementação de um limitador de taxa (throttling). Tanto no JavaScript (client-side) quanto no firmware C++ (server-side), foi adicionada uma lógica que impede o envio de novos pacotes MQTT se o último envio ocorreu há menos de 100ms (<code>INTERVALO_MQTT</code>). Isso suavizou o tráfego sem prejudicar a percepção de tempo real.</li>
+            </ul>
+
+            <h4><span class="badge b-soft">Debounce</span> Botões Físicos</h4>
+            <p>Os botões mecânicos apresentaram ruído (bouncing). Foi implementado um debounce via software e uma lógica de "aceleração": ao segurar o botão, o incremento de valores torna-se mais rápido, melhorando a experiência de uso para ir de 0 a 255.</p>
+        </section>
+
+        <!-- 6. RESULTADOS -->
+        <section id="testes">
+            <h2>Testes Realizados</h2>
+            <p>O sistema foi submetido a testes de estresse e consistência:</p>
+            <ul>
+                <li><strong>Teste de Latência:</strong> O tempo entre o acionamento do botão no Controlador e a mudança de cor no Receptor foi imperceptível (estimado em < 50ms na rede local).</li>
+                <li><strong>Teste de Sincronia Reversa:</strong> Ao alterar a cor via Web, o display OLED do Controlador atualizou instantaneamente as barras de progresso, validando o conceito de Digital Twin.</li>
+                <li><strong>Teste de Persistência:</strong> Ao desligar o sistema pelo botão Power (Soft-Off), o Receptor apagou o LED corretamente. Ao religar, o sistema restaurou a última cor configurada na memória RAM.</li>
+            </ul>
+        </section>
+
+        <section id="conclusao">
+            <h2>Conclusão</h2>
+            <p>O projeto atingiu todos os objetivos propostos. A arquitetura descentralizada demonstrou como dispositivos IoT podem operar de forma coordenada. A utilização do ESP32-S3 como servidor central (Web + WebSocket + Cliente MQTT) provou ser robusta, desde que gerenciado corretamente o fluxo de dados para evitar saturação de rede.</p>
+        </section>
+
+    </main>
+</body>
+</html>

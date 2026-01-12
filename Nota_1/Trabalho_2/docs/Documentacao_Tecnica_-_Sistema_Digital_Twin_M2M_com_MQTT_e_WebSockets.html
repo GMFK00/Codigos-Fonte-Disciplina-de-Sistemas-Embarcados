@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação Técnica - Digital Twin M2M</title>
+    <style>
+        :root {
+            --bg-sidebar: #1e1e1e;
+            --bg-content: #121212;
+            --bg-card: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #007acc;
+            --border: #333333;
+            --code-bg: #2d2d2d;
+            --code-text: #d4d4d4;
+            --sidebar-width: 300px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-content);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* --- SIDEBAR --- */
+        nav {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) var(--bg-sidebar);
+        }
+
+        nav h1 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        nav .subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        nav h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        nav ul { list-style: none; }
+        
+        nav a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 6px 0;
+            transition: 0.2s;
+        }
+
+        nav a:hover {
+            color: #fff;
+            padding-left: 5px;
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            margin-left: var(--sidebar-width);
+            padding: 40px 60px;
+            width: 100%;
+            max-width: 1600px;
+        }
+
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin: 30px 0 15px 0;
+            color: var(--accent);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin: 20px 0 10px 0;
+            color: #fff;
+            background: #252526;
+            padding: 8px 12px;
+            border-left: 4px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        p { margin-bottom: 15px; color: var(--text-secondary); }
+
+        /* --- TABLES --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #252526;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #2a2a2a; }
+
+        /* --- CODE BLOCKS --- */
+        pre {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            color: var(--code-text);
+            font-size: 0.9rem;
+        }
+
+        .inline-code {
+            background-color: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #ce9178;
+        }
+
+        /* Syntax Highlighting Colors */
+        .kwd { color: #569cd6; font-weight: bold; } /* Keyword */
+        .type { color: #4ec9b0; } /* Type */
+        .func { color: #dcdcaa; } /* Function */
+        .var { color: #9cdcfe; } /* Variable */
+        .num { color: #b5cea8; } /* Number */
+        .str { color: #ce9178; } /* String */
+        .com { color: #6a9955; font-style: italic; } /* Comment */
+
+        /* --- BADGES --- */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-right: 8px;
+        }
+        .b-in { background: #206a5d; color: #fff; }
+        .b-out { background: #811a1a; color: #fff; }
+        .b-io { background: #a87718; color: #fff; }
+        .b-net { background: #4b2a69; color: #fff; }
+
+        /* --- LISTS --- */
+        ul { margin-left: 20px; margin-bottom: 20px; color: var(--text-secondary); }
+        li { margin-bottom: 8px; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1000px) {
+            body { flex-direction: column; }
+            nav { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--border); }
+            main { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA LATERAL -->
+    <nav>
+        <h1>Digital Twin M2M</h1>
+        <div class="subtitle">Documentação Técnica v1.0</div>
+
+        <h3>Visão Geral</h3>
+        <ul>
+            <li><a href="#arquitetura">Arquitetura do Sistema</a></li>
+            <li><a href="#libs">Bibliotecas Utilizadas</a></li>
+            <li><a href="#protocolo">Protocolo JSON</a></li>
+        </ul>
+
+        <h3>Hardware</h3>
+        <ul>
+            <li><a href="#hw-controller">Pinout: Controlador</a></li>
+            <li><a href="#hw-receiver">Pinout: Receptor</a></li>
+        </ul>
+
+        <h3>Firmware: Controlador</h3>
+        <ul>
+            <li><a href="#ctrl-structs">Estrutura de Estado</a></li>
+            <li><a href="#ctrl-network">Gerenciamento de Rede</a></li>
+            <li><a href="#ctrl-inputs">Lógica de Botões</a></li>
+            <li><a href="#ctrl-display">Interface OLED</a></li>
+        </ul>
+
+        <h3>Firmware: Receptor</h3>
+        <ul>
+            <li><a href="#rcv-logic">Lógica de Atuação</a></li>
+        </ul>
+
+        <h3>Interface Web</h3>
+        <ul>
+            <li><a href="#web-client">Cliente WebSocket (JS)</a></li>
+        </ul>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+        
+        <!-- 1. ARQUITETURA -->
+        <section id="arquitetura">
+            <h2>Arquitetura do Sistema</h2>
+            <p>O sistema implementa o conceito de Gêmeo Digital (Digital Twin), onde o estado de um dispositivo físico é espelhado em tempo real em uma interface virtual e vice-versa. Além disso, atua como gateway M2M (Machine-to-Machine) para controle de um nó remoto.</p>
+            <ul>
+                <li><strong>Nó Controlador:</strong> Hospeda servidor Web e WebSocket, gerencia I/O físico (botões/display) e publica comandos MQTT.</li>
+                <li><strong>Nó Receptor:</strong> Dispositivo passivo que assina tópicos MQTT e atualiza seu hardware (LED RGB).</li>
+                <li><strong>Broker MQTT:</strong> Intermediário TCP/IP para desacoplamento dos nós.</li>
+                <li><strong>Cliente Web:</strong> Interface HTML5/JS embarcada na memória do Controlador.</li>
+            </ul>
+        </section>
+
+        <!-- 2. BIBLIOTECAS -->
+        <section id="libs">
+            <h2>Bibliotecas e Dependências</h2>
+            <table>
+                <thead>
+                    <tr><th>Biblioteca</th><th>Cabeçalho</th><th>Função Principal</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>WiFi</td><td><code class="inline-code">WiFi.h</code></td><td>Conectividade de rede IEEE 802.11.</td></tr>
+                    <tr><td>WebServer</td><td><code class="inline-code">WebServer.h</code></td><td>Servidor HTTP porta 80 (Entrega do HTML).</td></tr>
+                    <tr><td>WebSockets</td><td><code class="inline-code">WebSocketsServer.h</code></td><td>Comunicação Full-Duplex porta 81 (Sincronia UI).</td></tr>
+                    <tr><td>PubSubClient</td><td><code class="inline-code">PubSubClient.h</code></td><td>Cliente MQTT (M2M).</td></tr>
+                    <tr><td>ArduinoJson</td><td><code class="inline-code">ArduinoJson.h</code></td><td>Parsing e Serialização de dados.</td></tr>
+                    <tr><td>Adafruit GFX/SSD1306</td><td><code class="inline-code">Adafruit_SSD1306.h</code></td><td>Renderização gráfica no display OLED.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 3. HARDWARE -->
+        <section id="hw-controller">
+            <h2>Hardware: Controlador (ESP32-S3)</h2>
+            <p>Responsável pela interface homem-máquina (IHM) e orquestração da rede.</p>
+            <table>
+                <thead><tr><th>Macro</th><th>GPIO</th><th>Função</th><th>Descrição</th></tr></thead>
+                <tbody>
+                    <tr><td>BTN_MODE</td><td>15</td><td><span class="badge b-in">INPUT_PULLUP</span></td><td>Alterna entre R, G, B e Brilho no menu.</td></tr>
+                    <tr><td>BTN_UP</td><td>17</td><td><span class="badge b-in">INPUT_PULLUP</span></td><td>Incrementa o valor selecionado.</td></tr>
+                    <tr><td>BTN_DOWN</td><td>16</td><td><span class="badge b-in">INPUT_PULLUP</span></td><td>Decrementa o valor selecionado.</td></tr>
+                    <tr><td>BTN_PWR</td><td>18</td><td><span class="badge b-in">INPUT_PULLUP</span></td><td>Liga/Desliga o sistema (Lógica de Software).</td></tr>
+                    <tr><td>I2C_SDA</td><td>8</td><td><span class="badge b-io">I2C</span></td><td>Dados para o Display OLED.</td></tr>
+                    <tr><td>I2C_SCL</td><td>9</td><td><span class="badge b-io">I2C</span></td><td>Clock para o Display OLED.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="hw-receiver">
+            <h2>Hardware: Receptor (ESP32-S3)</h2>
+            <p>Nó atuador simples que responde a comandos remotos.</p>
+            <table>
+                <thead><tr><th>Macro</th><th>GPIO</th><th>Função</th><th>Descrição</th></tr></thead>
+                <tbody>
+                    <tr><td>LED_PIN</td><td>48</td><td><span class="badge b-out">RMT OUTPUT</span></td><td>LED RGB WS2812B integrado (Built-in).</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 4. PROTOCOLO -->
+        <section id="protocolo">
+            <h2>Protocolo de Dados (JSON)</h2>
+            <p>O mesmo payload JSON é utilizado tanto na comunicação via WebSocket quanto via MQTT para garantir consistência de dados.</p>
+            <pre><code>{
+  <span class="str">"r"</span>: <span class="num">255</span>,    <span class="com">// Canal Vermelho (0-255)</span>
+  <span class="str">"g"</span>: <span class="num">128</span>,    <span class="com">// Canal Verde (0-255)</span>
+  <span class="str">"b"</span>: <span class="num">0</span>,      <span class="com">// Canal Azul (0-255)</span>
+  <span class="str">"bri"</span>: <span class="num">100</span>,  <span class="com">// Brilho Global (0-255)</span>
+  <span class="str">"pwr"</span>: <span class="num">1</span>     <span class="com">// Estado de Energia: 1 (Ligado), 0 (Desligado)</span>
+}</code></pre>
+        </section>
+
+        <!-- 5. FIRMWARE CONTROLADOR -->
+        <section id="ctrl-structs">
+            <h2>Firmware Controlador: Gestão de Estado</h2>
+            <p>O estado do sistema é centralizado em uma estrutura global, garantindo que qualquer alteração (seja via botão físico ou via web) reflita na mesma fonte de verdade.</p>
+            <pre><code><span class="kwd">struct</span> <span class="type">Estado</span> {
+  <span class="type">int</span> r = 50;
+  <span class="type">int</span> g = 50;
+  <span class="type">int</span> b = 50;
+  <span class="type">int</span> brilho = 15;
+  <span class="type">bool</span> ligado = true;
+  <span class="type">int</span> menuIndex = 0; <span class="com">// 0:R, 1:G, 2:B, 3:Brilho</span>
+};
+<span class="type">Estado</span> sistema;</code></pre>
+        </section>
+
+        <section id="ctrl-network">
+            <h2>Firmware Controlador: Rede e Sincronia</h2>
+            
+            <h4><span class="func">void</span> atualizarRede()</h4>
+            <p>Esta função é responsável por propagar o estado atual para todos os clientes conectados.</p>
+            <ul>
+                <li><strong>WebSocket Broadcast:</strong> Envia o JSON para todos os navegadores conectados via <code>webSocket.broadcastTXT(json)</code>.</li>
+                <li><strong>MQTT Publish:</strong> Publica o JSON no tópico <code>laboratorio/led</code>. Caso o sistema esteja "desligado" (pwr=0), publica um JSON com cores zeradas para apagar o LED remoto, mas mantém o estado interno preservado.</li>
+                <li><strong>Rate Limiting:</strong> A função é controlada por um temporizador (<code>INTERVALO_MQTT = 100ms</code>) no loop principal para evitar congestionamento da rede durante ajustes rápidos nos sliders.</li>
+            </ul>
+
+            <h4><span class="func">void</span> webSocketEvent(...)</h4>
+            <p>Callback acionado ao receber dados do navegador.</p>
+            <ul>
+                <li>Deserializa o JSON recebido.</li>
+                <li>Atualiza a <code>struct sistema</code>.</li>
+                <li>Seta flags <code>precisaAtualizarVisual</code> e <code>precisaAtualizarRede</code> para forçar atualização do OLED e reenvio MQTT.</li>
+                <li>Reseta <code>lastMqttSend</code> para garantir resposta imediata.</li>
+            </ul>
+        </section>
+
+        <section id="ctrl-inputs">
+            <h2>Firmware Controlador: Entradas Físicas</h2>
+
+            <h4><span class="func">void</span> lerBotoesAjuste()</h4>
+            <p>Implementa lógica de incremento/decremento com aceleração.</p>
+            <ul>
+                <li><strong>Clique Simples:</strong> Altera o valor em 1 unidade.</li>
+                <li><strong>Hold (Segurar):</strong> Se o botão for mantido pressionado por mais de 400ms, entra em modo de repetição rápida, alterando o valor em passos de 5 unidades a cada 50ms.</li>
+                <li>Usa a variável <code>menuIndex</code> para determinar qual campo da struct (r, g, b ou brilho) será afetado via ponteiros.</li>
+            </ul>
+
+            <h4><span class="func">void</span> lerBotaoPower()</h4>
+            <p>Alterna o booleano <code>sistema.ligado</code>. Quando desligado, o OLED exibe "OFF" e o controlador envia comando de desligamento via MQTT, mas retém as configurações de cor na memória para quando for religado.</p>
+        </section>
+
+        <section id="ctrl-display">
+            <h2>Firmware Controlador: Interface OLED</h2>
+            
+            <h4><span class="func">void</span> desenharTela()</h4>
+            <p>Renderiza a interface gráfica baseada no estado atual.</p>
+            <ul>
+                <li><strong>Cabeçalho:</strong> Exibe título e indicador de conexão MQTT (círculo cheio = conectado).</li>
+                <li><strong>Lista de Parâmetros:</strong> Itera sobre R, G, B e BRI.</li>
+                <li><strong>Cursor:</strong> Desenha o símbolo ">" ao lado do item selecionado por <code>menuIndex</code>.</li>
+                <li><strong>Barras de Progresso:</strong> Desenha retângulos preenchidos proporcionalmente ao valor (0-255 mapeado para pixels) para feedback visual imediato.</li>
+            </ul>
+        </section>
+
+        <!-- 6. FIRMWARE RECEPTOR -->
+        <section id="rcv-logic">
+            <h2>Firmware Receptor: Lógica de Atuação</h2>
+            <p>O firmware do receptor é minimalista, atuando como um escravo MQTT.</p>
+            
+            <h4><span class="func">void</span> callback(...)</h4>
+            <p>Função executada a cada mensagem recebida no tópico <code>laboratorio/led</code>.</p>
+            <ol>
+                <li>Recebe o payload <code>byte*</code>.</li>
+                <li>Converte para <code>StaticJsonDocument</code>.</li>
+                <li>Extrai R, G, B e Bri.</li>
+                <li>Aplica ao hardware via <code>strip.setBrightness(bri)</code> e <code>strip.setLedColorData(...)</code>.</li>
+                <li>Chama <code>strip.show()</code> para atualizar o LED WS2812.</li>
+            </ol>
+        </section>
+
+        <!-- 7. INTERFACE WEB -->
+        <section id="web-client">
+            <h2>Interface Web (Client-Side)</h2>
+            <p>A página HTML é armazenada na memória flash do ESP32 (variável <code>html_page</code>) e servida via rota raiz <code>/</code>.</p>
+
+            <h4>JavaScript Embarcado</h4>
+            <ul>
+                <li><strong>WebSocket Init:</strong> Conecta em <code>ws://IP_ESP32:81/</code>. Gerencia reconexão automática em caso de queda.</li>
+                <li><strong>Sincronia (Inbound):</strong> Ao receber mensagem do servidor (<code>websocket.onmessage</code>), atualiza os sliders HTML e a cor da <code>div</code> de preview, garantindo que mudanças físicas movam os sliders virtuais.</li>
+                <li><strong>Controle (Outbound):</strong> A função <code>uiChange()</code> é chamada no evento <code>oninput</code> dos sliders. Ela monta o JSON e envia via WebSocket. Possui um limitador de taxa (throttle) de 50ms para não saturar o ESP32.</li>
+                <li><strong>Preview de Cor:</strong> Converte os valores RGB para Hexadecimal e atualiza o background da interface dinamicamente.</li>
+            </ul>
+        </section>
+
+    </main>
+</body>
+</html>
