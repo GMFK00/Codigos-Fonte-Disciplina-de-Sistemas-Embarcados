@@ -40,7 +40,7 @@ O firmware implementa um menu interativo que permite ao usuário:
 ### 🚀 Como Usar
 
 1.  **Montagem:** Nenhuma montagem externa é necessária, pois o LED WS2812 já vem integrado à placa e conectado ao GPIO 48. Basta conectar a placa ao computador com um cabo USB.
-2.  **Código:** Abra o arquivo do projeto localizado em `Nota 1/Trabalho 1/BUILT_IN_ESP32-S3_RGB_WS2812/` na Arduino IDE.
+2.  **Código:** Abra o arquivo do projeto localizado em `Nota_1/Trabalho_1/src/Built-in_ESP32-S3_RGB_WS2812/` na Arduino IDE.
 3.  **Bibliotecas:** Certifique-se de ter a biblioteca `ESP32_WS2812_Lib` instalada.
 4.  **Upload:** Compile e carregue o código para a sua placa ESP32-S3.
 5.  **Interação:**
@@ -155,9 +155,9 @@ Desenvolver uma arquitetura completa de IoT composta por:
 
 ### 🚀 Como Usar
 
-1.  **Infraestrutura:** Inicie o Broker MQTT e o Node-RED. Importe o arquivo `flows.json` no Node-RED.
-2.  **Gateway:** Carregue o código `WSN_Monitoramento_Ambiental_Gateway.ino`. Certifique-se de configurar o Wi-Fi e IP do Broker.
-3.  **Sensor:** Carregue o código `WSN_Monitoramento_Ambiental_No_Sensor.ino`. Conecte o RTC e os sensores conforme o pinout.
+1.  **Infraestrutura:** Inicie o Broker MQTT e o Node-RED. Importe o arquivo `Nota_1/Trabalho_3/config/Node-RED/flows.json` no Node-RED.
+2.  **Gateway:** Carregue o código `Nota_1/Trabalho_3/src/WSN_Monitoramento_Ambiental_Gateway/WSN_Monitoramento_Ambiental_Gateway.ino`. Certifique-se de configurar o Wi-Fi e IP do Broker.
+3.  **Sensor:** Carregue o código `Nota_1/Trabalho_3/src/WSN_Monitoramento_Ambiental_No_Sensor/WSN_Monitoramento_Ambiental_No_Sensor.ino`. Conecte o RTC e os sensores conforme o pinout.
 4.  **Operação:**
     *   O Gateway indicará conexão via LED RGB (Verde = Pronto).
     *   O Sensor enviará dados e dormirá.
@@ -168,7 +168,7 @@ Desenvolver uma arquitetura completa de IoT composta por:
 
 ## Próximos Trabalhos
 
-As demais pastas (`Nota 2`, `Nota 3`) serão preenchidas conforme os próximos projetos da disciplina forem desenvolvidos.
+As demais pastas (`Nota_2`, `Nota_3`) serão preenchidas conforme os próximos projetos da disciplina forem desenvolvidos.
 
 ## Autores
 
