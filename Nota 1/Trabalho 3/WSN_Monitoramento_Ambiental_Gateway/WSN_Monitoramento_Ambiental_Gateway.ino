@@ -7,9 +7,9 @@
 #include <time.h> // Necessário para converter o Timestamp
 
 // --- CREDENCIAIS ---
-const char* ssid = "SSID_SIST_EMBARCADOS";
-const char* password = "PSSWD2026";
-const char* mqtt_server = "192.168.137.1"; 
+const char* ssid = "SSID_WIFI";
+const char* password = "SENHA_WIFI";
+const char* mqtt_server = "IP_BROKER_MQTT"; 
 
 // --- PINOUT ---
 #define CE_PIN    14
