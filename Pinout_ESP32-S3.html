@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação Técnica YD-ESP32-S3</title>
+    <style>
+        :root {
+            --bg-body: #0a0a0a;
+            --bg-panel: #141414;
+            --bg-header: #000000;
+            --text-main: #e0e0e0;
+            --text-dim: #909090;
+            --accent: #00e676;
+            --border: #2a2a2a;
+            
+            /* Paleta de Cores das Tags */
+            --c-power: #d32f2f;   /* Vermelho */
+            --c-gnd: #1976d2;     /* Azul Escuro */
+            --c-gpio: #388e3c;    /* Verde Escuro */
+            
+            --t-touch: #00c853;   /* Verde Claro (Touch) */
+            --t-adc: #ab47bc;     /* Roxo (ADC) */
+            --t-rtc: #ff7043;     /* Laranja (RTC) */
+            --t-spi: #fbc02d;     /* Amarelo (FSPI/SPI) */
+            --t-uart: #7e57c2;    /* Violeta (UART) */
+            --t-i2c: #29b6f6;     /* Ciano (I2C) */
+            --t-jtag: #e53935;    /* Vermelho (JTAG) */
+            --t-sys: #78909c;     /* Cinza Azulado (System) */
+            --t-usb: #0277bd;     /* Azul USB */
+            --t-strap: #ec407a;   /* Rosa (Strapping/Boot) */
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Consolas', 'Monaco', 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 40px;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; }
+
+        /* HEADER */
+        header {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--accent);
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .model-info {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+        }
+
+        /* GLOSSÁRIO */
+        .section-title {
+            font-size: 1.8rem;
+            margin: 60px 0 30px 0;
+            padding-left: 15px;
+            border-left: 4px solid var(--accent);
+            color: #fff;
+        }
+
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .glossary-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .glossary-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        .badge {
+            font-size: 0.75rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #000;
+            text-transform: uppercase;
+        }
+
+        .desc { font-size: 0.95rem; color: var(--text-dim); margin-bottom: 10px; }
+        .usage { font-size: 0.9rem; color: var(--accent); }
+
+        /* PINOUT LAYOUT */
+        .pinout-container {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .pin-side {
+            flex: 1;
+            min-width: 600px;
+        }
+
+        .side-title {
+            text-align: center;
+            background: #222;
+            padding: 10px;
+            font-weight: bold;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .pin-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .pin-table tr { background: var(--bg-panel); border-bottom: 1px solid var(--border); }
+        .pin-table tr:hover { background: #222; }
+
+        .pin-table td { padding: 8px 12px; vertical-align: middle; }
+
+        /* Colunas da Tabela */
+        .col-id { width: 60px; text-align: center; font-weight: bold; font-size: 1.1rem; border-right: 1px solid var(--border); }
+        .col-main { width: 80px; font-weight: bold; color: #fff; }
+        .col-funcs { display: flex; flex-wrap: wrap; gap: 6px; }
+
+        /* Estilização das Tags de Função */
+        .tag {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+            white-space: nowrap;
+        }
+
+        /* Cores Específicas */
+        .b-adc { background: var(--t-adc); }
+        .b-touch { background: var(--t-touch); }
+        .b-rtc { background: var(--t-rtc); }
+        .b-spi { background: var(--t-spi); color: #000; text-shadow: none; }
+        .b-uart { background: var(--t-uart); }
+        .b-i2c { background: var(--t-i2c); color: #000; text-shadow: none; }
+        .b-jtag { background: var(--t-jtag); }
+        .b-usb { background: var(--t-usb); }
+        .b-sys { background: var(--t-sys); color: #000; text-shadow: none; }
+        .b-strap { background: var(--t-strap); }
+        
+        /* Cores do ID do Pino */
+        .pwr-pin { color: var(--c-power); }
+        .gnd-pin { color: var(--c-gnd); }
+        .gpio-pin { color: var(--c-gpio); }
+
+        @media (max-width: 1200px) {
+            .pin-side { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>YD-ESP32-S3</h1>
+        <div class="model-info">Documentação de Hardware &bull; Baseado no Pinout VCC-GND Studio</div>
+    </header>
+
+    <!-- 1. GLOSSÁRIO TÉCNICO -->
+    <h2 class="section-title">Glossário de Tags e Funcionalidades</h2>
+    <div class="glossary-grid">
+        
+        <div class="glossary-card">
+            <h3><span class="badge b-adc" style="color:#fff">ADC</span> Analog-to-Digital Converter</h3>
+            <div class="desc">Conversores que leem tensões analógicas (0V a 3.3V) e transformam em valores digitais (0 a 4095).</div>
+            <div class="usage">
+                • <strong>ADC1:</strong> Pode ser usado livremente.<br>
+                • <strong>ADC2:</strong> Restrito! Não pode ser usado se o Wi-Fi estiver ligado.
+            </div>
+        </div>
+
+        <div class="glossary-card">
+            <h3><span class="badge b-touch" style="color:#fff">TOUCH</span> Capacitive Touch</h3>
+            <div class="desc">Pinos com circuito interno para detectar toque humano (capacitância), substituindo botões físicos.</div>
+            <div class="usage">Pode acordar o ESP32 do modo Deep Sleep. Sensibilidade ajustável via software.</div>
+        </div>
+
+        <div class="glossary-card">
+            <h3><span class="badge b-rtc" style="color:#fff">RTC</span> Real Time Clock GPIO</h3>
+            <div class="desc">Pinos conectados ao subsistema de Baixo Consumo (Low Power).</div>
+            <div class="usage">Únicos pinos que funcionam (leitura/escrita) quando o chip está dormindo (Deep Sleep).</div>
+        </div>
+
+        <div class="glossary-card">
+            <h3><span class="badge b-i2c">I2C</span> Inter-Integrated Circuit</h3>
+            <div class="desc">Protocolo de comunicação serial de dois fios (SDA/SCL) para sensores e displays.</div>
+            <div class="usage">
+                • <strong>SDA:</strong> Serial Data<br>
+                • <strong>SCL:</strong> Serial Clock<br>
+                *Nota: O ESP32 permite mapear I2C em qualquer pino, mas os marcados na imagem (8/9) são os padrões sugeridos.
+            </div>
+        </div>
+
+        <div class="glossary-card">
+            <h3><span class="badge b-spi">FSPI/SPI</span> Serial Peripheral Interface</h3>
+            <div class="desc">Protocolo de alta velocidade (Full Duplex) para cartões SD, Displays TFT e memórias Flash externas.</div>
+            <div class="usage">
+                • <strong>FSPI:</strong> Fast SPI (Controlador dedicado de alta velocidade).<br>
+                • <strong>VSPI/HSPI:</strong> Nomenclaturas legadas do ESP32 clássico, ainda usadas.<br>
+                • <strong>Pinos:</strong> MOSI (Data Out), MISO (Data In), CLK (Clock), CS/SS (Select).
+            </div>
+        </div>
+
+        <div class="glossary-card">
+            <h3><span class="badge b-uart" style="color:#fff">UART</span> Universal Asynchronous RX/TX</h3>
+            <div class="desc">Interface Serial padrão.</div>
+            <div class="usage">
+                • <strong>UART0 (TXD0/RXD0):</strong> Dedicada ao upload de código e monitor serial (USB-Serial converter).<br>
+                • <strong>UART1/2:</strong> Livres para conectar GPS, módulos GSM, etc.<br>
+                • <strong>RTS/CTS:</strong> Pinos de controle de fluxo de hardware.
+            </div>
+        </div>
+
+        <div class="glossary-card">
+            <h3><span class="badge b-usb" style="color:#fff">USB</span> Native USB OTG</h3>
+            <div class="desc">Conexão USB direta ao silício do ESP32-S3 (sem chip conversor CH340/CP2102).</div>
+            <div class="usage">Permite que o ESP32 simule teclados (HID), mouses, pendrives (MSC) ou porta serial virtual (CDC).</div>
+        </div>
+
+        <div class="glossary-card">
+            <h3><span class="badge b-jtag" style="color:#fff">JTAG</span> Hardware Debug</h3>
+            <div class="desc">Interface padrão da indústria para debugar código linha a linha.</div>
+            <div class="usage">Permite usar breakpoints no VS Code/PlatformIO sem usar `Serial.print`. Pinos: MTDI, MTCK, MTMS, MTDO.</div>
+        </div>
+
+        <div class="glossary-card">
+            <h3><span class="badge b-strap" style="color:#fff">STRAP</span> Strapping Pins</h3>
+            <div class="desc">Pinos críticos que decidem como o chip liga (Boot Mode, Voltagem da Flash, etc.).</div>
+            <div class="usage">
+                ⚠ <strong>Cuidado:</strong> Evite puxar esses pinos para HIGH ou LOW externamente durante a inicialização, ou o ESP32 pode não ligar.<br>
+                Pinos: 0, 3, 45, 46.
+            </div>
+        </div>
+
+        <div class="glossary-card">
+            <h3><span class="badge b-sys">SYS</span> System / Clock</h3>
+            <div class="desc">Funções utilitárias de sistema.</div>
+            <div class="usage">
+                • <strong>XTAL_32K:</strong> Cristal externo para relógio preciso.<br>
+                • <strong>CLK_OUT:</strong> Saída de sinal de clock.<br>
+                • <strong>RGB LED:</strong> Pino do LED endereçável integrado.
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. PINOUT DETALHADO -->
+    <h2 class="section-title">Mapeamento de Pinos (Pinout)</h2>
+    <div class="pinout-container">
+        
+        <!-- LADO ESQUERDO -->
+        <div class="pin-side">
+            <div class="side-title">Lado Esquerdo (USB para Baixo)</div>
+            <table class="pin-table">
+                <!-- Power -->
+                <tr><td class="col-id pwr-pin">3.3V</td><td class="col-main">3V3</td><td><span class="tag b-sys">POWER OUT</span></td></tr>
+                <tr><td class="col-id pwr-pin">3.3V</td><td class="col-main">3V3</td><td><span class="tag b-sys">POWER OUT</span></td></tr>
+                <tr><td class="col-id" style="color:#fff">RST</td><td class="col-main">EN</td><td><span class="tag b-sys">CHIP RESET</span></td></tr>
+
+                <!-- GPIOs -->
+                <tr><td class="col-id gpio-pin">4</td><td class="col-main">IO4</td><td class="col-funcs"><span class="tag b-adc">ADC1_3</span> <span class="tag b-touch">TOUCH4</span> <span class="tag b-rtc">RTC_4</span></td></tr>
+                <tr><td class="col-id gpio-pin">5</td><td class="col-main">IO5</td><td class="col-funcs"><span class="tag b-adc">ADC1_4</span> <span class="tag b-touch">TOUCH5</span> <span class="tag b-rtc">RTC_5</span></td></tr>
+                <tr><td class="col-id gpio-pin">6</td><td class="col-main">IO6</td><td class="col-funcs"><span class="tag b-adc">ADC1_5</span> <span class="tag b-touch">TOUCH6</span> <span class="tag b-rtc">RTC_6</span></td></tr>
+                <tr><td class="col-id gpio-pin">7</td><td class="col-main">IO7</td><td class="col-funcs"><span class="tag b-adc">ADC1_6</span> <span class="tag b-touch">TOUCH7</span> <span class="tag b-rtc">RTC_7</span></td></tr>
+                
+                <tr><td class="col-id gpio-pin">15</td><td class="col-main">IO15</td><td class="col-funcs"><span class="tag b-adc">ADC2_4</span> <span class="tag b-touch">TOUCH12</span> <span class="tag b-uart">RXD 1</span> <span class="tag b-uart">RTS 0</span> <span class="tag b-sys">XTAL_32K_P</span> <span class="tag b-rtc">RTC_15</span></td></tr>
+                <tr><td class="col-id gpio-pin">16</td><td class="col-main">IO16</td><td class="col-funcs"><span class="tag b-adc">ADC2_5</span> <span class="tag b-uart">TXD 1</span> <span class="tag b-uart">CTS 0</span> <span class="tag b-sys">XTAL_32K_N</span> <span class="tag b-rtc">RTC_16</span></td></tr>
+                <tr><td class="col-id gpio-pin">17</td><td class="col-main">IO17</td><td class="col-funcs"><span class="tag b-adc">ADC2_6</span> <span class="tag b-uart">TXD 1</span> <span class="tag b-rtc">RTC_17</span></td></tr>
+                <tr><td class="col-id gpio-pin">18</td><td class="col-main">IO18</td><td class="col-funcs"><span class="tag b-adc">ADC2_7</span> <span class="tag b-uart">RXD 1</span> <span class="tag b-rtc">RTC_18</span> <span class="tag b-sys">CLK_OUT3</span></td></tr>
+                
+                <tr><td class="col-id gpio-pin">8</td><td class="col-main">IO8</td><td class="col-funcs"><span class="tag b-i2c">SDA</span> <span class="tag b-adc">ADC1_7</span> <span class="tag b-touch">TOUCH8</span> <span class="tag b-rtc">RTC_8</span></td></tr>
+                <tr><td class="col-id gpio-pin">3</td><td class="col-main">IO3</td><td class="col-funcs"><span class="tag b-jtag">JTAG</span> <span class="tag b-adc">ADC1_2</span> <span class="tag b-touch">TOUCH3</span> <span class="tag b-rtc">RTC_3</span> <span class="tag b-strap">STRAP</span></td></tr>
+                <tr><td class="col-id gpio-pin">46</td><td class="col-main">IO46</td><td class="col-funcs"><span class="tag b-sys">LOG</span> <span class="tag b-strap">BOOT MODE</span></td></tr>
+                
+                <tr><td class="col-id gpio-pin">9</td><td class="col-main">IO9</td><td class="col-funcs"><span class="tag b-i2c">SCL</span> <span class="tag b-spi">FSPIHD</span> <span class="tag b-adc">ADC1_8</span> <span class="tag b-touch">TOUCH9</span> <span class="tag b-rtc">RTC_9</span></td></tr>
+                <tr><td class="col-id gpio-pin">10</td><td class="col-main">IO10</td><td class="col-funcs"><span class="tag b-spi">FSPICS0 (SS)</span> <span class="tag b-spi">FSPIIO4</span> <span class="tag b-adc">ADC1_9</span> <span class="tag b-touch">TOUCH10</span> <span class="tag b-rtc">RTC_10</span></td></tr>
+                <tr><td class="col-id gpio-pin">11</td><td class="col-main">IO11</td><td class="col-funcs"><span class="tag b-spi">FSPID (MOSI)</span> <span class="tag b-spi">FSPIIO5</span> <span class="tag b-adc">ADC2_0</span> <span class="tag b-touch">TOUCH11</span> <span class="tag b-rtc">RTC_11</span></td></tr>
+                <tr><td class="col-id gpio-pin">12</td><td class="col-main">IO12</td><td class="col-funcs"><span class="tag b-spi">FSPICLK (SCK)</span> <span class="tag b-spi">FSPIIO6</span> <span class="tag b-adc">ADC2_1</span> <span class="tag b-touch">TOUCH12</span> <span class="tag b-rtc">RTC_12</span></td></tr>
+                <tr><td class="col-id gpio-pin">13</td><td class="col-main">IO13</td><td class="col-funcs"><span class="tag b-spi">FSPIQ (MISO)</span> <span class="tag b-spi">FSPIIO7</span> <span class="tag b-adc">ADC2_2</span> <span class="tag b-touch">TOUCH13</span> <span class="tag b-rtc">RTC_13</span></td></tr>
+                <tr><td class="col-id gpio-pin">14</td><td class="col-main">IO14</td><td class="col-funcs"><span class="tag b-spi">FSPIWP</span> <span class="tag b-spi">FSPIDQS</span> <span class="tag b-adc">ADC2_3</span> <span class="tag b-touch">TOUCH14</span> <span class="tag b-rtc">RTC_14</span></td></tr>
+                
+                <tr><td class="col-id pwr-pin">5V</td><td class="col-main">5V</td><td><span class="tag b-sys">POWER INPUT</span></td></tr>
+                <tr><td class="col-id gnd-pin">GND</td><td class="col-main">GND</td><td><span class="tag b-sys">GROUND</span></td></tr>
+            </table>
+        </div>
+
+        <!-- LADO DIREITO -->
+        <div class="pin-side">
+            <div class="side-title">Lado Direito (USB para Baixo)</div>
+            <table class="pin-table">
+                <tr><td class="col-id gnd-pin">GND</td><td class="col-main">GND</td><td><span class="tag b-sys">GROUND</span></td></tr>
+                
+                <tr><td class="col-id gpio-pin">43</td><td class="col-main">IO43</td><td class="col-funcs"><span class="tag b-uart">TXD 0</span> <span class="tag b-sys">CLK_OUT1</span></td></tr>
+                <tr><td class="col-id gpio-pin">44</td><td class="col-main">IO44</td><td class="col-funcs"><span class="tag b-uart">RXD 0</span> <span class="tag b-sys">CLK_OUT2</span></td></tr>
+                
+                <tr><td class="col-id gpio-pin">1</td><td class="col-main">IO1</td><td class="col-funcs"><span class="tag b-adc">ADC1_0</span> <span class="tag b-touch">TOUCH1</span> <span class="tag b-rtc">RTC_1</span></td></tr>
+                <tr><td class="col-id gpio-pin">2</td><td class="col-main">IO2</td><td class="col-funcs"><span class="tag b-adc">ADC1_1</span> <span class="tag b-touch">TOUCH2</span> <span class="tag b-rtc">RTC_2</span></td></tr>
+                
+                <tr><td class="col-id gpio-pin">42</td><td class="col-main">IO42</td><td class="col-funcs"><span class="tag b-jtag">MTMS</span> <span class="tag b-sys">DEBUG</span></td></tr>
+                <tr><td class="col-id gpio-pin">41</td><td class="col-main">IO41</td><td class="col-funcs"><span class="tag b-jtag">MTDI</span> <span class="tag b-sys">CLK_OUT1</span></td></tr>
+                <tr><td class="col-id gpio-pin">40</td><td class="col-main">IO40</td><td class="col-funcs"><span class="tag b-jtag">MTDO</span> <span class="tag b-sys">CLK_OUT2</span></td></tr>
+                <tr><td class="col-id gpio-pin">39</td><td class="col-main">IO39</td><td class="col-funcs"><span class="tag b-jtag">MTCK</span> <span class="tag b-sys">CLK_OUT3</span></td></tr>
+                
+                <tr><td class="col-id gpio-pin">38</td><td class="col-main">IO38</td><td class="col-funcs"><span class="tag b-spi">FSPIWP</span> <span class="tag b-sys">BUILTIN LED (Alguns Modelos)</span></td></tr>
+                <tr><td class="col-id gpio-pin">37</td><td class="col-main">IO37</td><td class="col-funcs"><span class="tag b-spi">SPIDQS</span> <span class="tag b-spi">FSPIQ</span> <span class="tag b-spi">MISO OTG</span></td></tr>
+                <tr><td class="col-id gpio-pin">36</td><td class="col-main">IO36</td><td class="col-funcs"><span class="tag b-spi">SPIIO7</span> <span class="tag b-spi">FSPICLK</span> <span class="tag b-spi">SCK OTG</span></td></tr>
+                <tr><td class="col-id gpio-pin">35</td><td class="col-main">IO35</td><td class="col-funcs"><span class="tag b-spi">SPIIO6</span> <span class="tag b-spi">FSPID</span> <span class="tag b-spi">MOSI OTG</span></td></tr>
+                
+                <tr><td class="col-id gpio-pin">0</td><td class="col-main">IO0</td><td class="col-funcs"><span class="tag b-sys">BOOT BUTTON</span> <span class="tag b-sys">DOWNLOAD MODE</span> <span class="tag b-strap">STRAP</span></td></tr>
+                <tr><td class="col-id gpio-pin">45</td><td class="col-main">IO45</td><td class="col-funcs"><span class="tag b-spi">VSPI</span> <span class="tag b-strap">STRAP</span></td></tr>
+                
+                <tr><td class="col-id gpio-pin">48</td><td class="col-main">IO48</td><td class="col-funcs"><span class="tag b-sys">RGB LED (NeoPixel)</span> <span class="tag b-spi">SPICLK_N</span></td></tr>
+                <tr><td class="col-id gpio-pin">47</td><td class="col-main">IO47</td><td class="col-funcs"><span class="tag b-spi">SPICLK_P</span></td></tr>
+                
+                <tr><td class="col-id gpio-pin">21</td><td class="col-main">IO21</td><td class="col-funcs"><span class="tag b-rtc">RTC_21</span></td></tr>
+                <tr><td class="col-id gpio-pin">20</td><td class="col-main">IO20</td><td class="col-funcs"><span class="tag b-usb">USB_D+</span> <span class="tag b-adc">ADC2_9</span> <span class="tag b-uart">CTS 1</span> <span class="tag b-sys">CLK_OUT1</span> <span class="tag b-uart">TXD 2</span> <span class="tag b-rtc">RTC_20</span></td></tr>
+                <tr><td class="col-id gpio-pin">19</td><td class="col-main">IO19</td><td class="col-funcs"><span class="tag b-usb">USB_D-</span> <span class="tag b-adc">ADC2_8</span> <span class="tag b-uart">RTS 1</span> <span class="tag b-sys">CLK_OUT2</span> <span class="tag b-uart">RXD 2</span> <span class="tag b-rtc">RTC_19</span></td></tr>
+                
+                <tr><td class="col-id gnd-pin">GND</td><td class="col-main">GND</td><td><span class="tag b-sys">GROUND</span></td></tr>
+                <tr><td class="col-id gnd-pin">GND</td><td class="col-main">GND</td><td><span class="tag b-sys">GROUND</span></td></tr>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
