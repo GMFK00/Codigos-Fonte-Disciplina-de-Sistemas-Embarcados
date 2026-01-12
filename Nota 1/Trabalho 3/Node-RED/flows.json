@@ -1,0 +1,701 @@
+[
+    {
+        "id": "tab_wsn_v2",
+        "type": "tab",
+        "label": "WSN Monitoramento 2.0",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "mqtt_in_dados_v2",
+        "type": "mqtt in",
+        "z": "tab_wsn_v2",
+        "name": "Recebe Dados",
+        "topic": "fazenda/estufa/dados",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "broker_local",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 110,
+        "y": 180,
+        "wires": [
+            [
+                "json_parser_v2",
+                "debug_raw_v2"
+            ]
+        ]
+    },
+    {
+        "id": "json_parser_v2",
+        "type": "json",
+        "z": "tab_wsn_v2",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 290,
+        "y": 180,
+        "wires": [
+            [
+                "func_distribuidor"
+            ]
+        ]
+    },
+    {
+        "id": "func_distribuidor",
+        "type": "function",
+        "z": "tab_wsn_v2",
+        "name": "Distribuidor e Conversor",
+        "func": "var temp = Number(msg.payload.temp);\nvar umid = Number(msg.payload.umid);\nvar lux = Number(msg.payload.lux);\nvar ts = msg.payload.ts;\nvar tipo = msg.payload.tipo;\n\n// --- CORREÇÃO DE FUSO HORÁRIO ---\n// Adicionamos 3 horas (10800 segundos) para compensar.\nvar ts_corrigido = ts + 10800; \n\nvar date = new Date(ts_corrigido * 1000);\nvar dataFormatada = date.toLocaleString(\"pt-BR\");\n\nreturn [\n    { payload: temp, topic: \"Temperatura\" },\n    { payload: umid, topic: \"Umidade\" },\n    { payload: lux, topic: \"Luminosidade\" },\n    { payload: dataFormatada },\n    { payload: tipo }\n];",
+        "outputs": 5,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 180,
+        "wires": [
+            [
+                "gauge_temp_v2",
+                "chart_temp_v2"
+            ],
+            [
+                "gauge_umid_v2",
+                "chart_umid_v2"
+            ],
+            [
+                "chart_lux_v2",
+                "debug_lux"
+            ],
+            [
+                "text_time_v2"
+            ],
+            [
+                "text_tipo_v2"
+            ]
+        ]
+    },
+    {
+        "id": "gauge_temp_v2",
+        "type": "ui-gauge",
+        "z": "tab_wsn_v2",
+        "name": "Temperatura",
+        "group": "grp_sensores_v2",
+        "order": 1,
+        "value": "payload",
+        "valueType": "msg",
+        "width": "3",
+        "height": "4",
+        "gtype": "semicircle",
+        "title": "Temperatura",
+        "alwaysShowTitle": false,
+        "units": "°C",
+        "icon": "thermometer",
+        "prefix": "",
+        "suffix": "°C",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#5cd65c",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "30",
+                "color": "#ffcc00",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "40",
+                "color": "#ff3333",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": "-45",
+        "max": "100",
+        "sizeThickness": "",
+        "sizeGap": "",
+        "sizeKeyThickness": "",
+        "className": "",
+        "x": 790,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "chart_temp_v2",
+        "type": "ui-chart",
+        "z": "tab_wsn_v2",
+        "group": "grp_graf_temp",
+        "name": "Grafico de Temperatura",
+        "label": "Histórico Temperatura (°C)",
+        "order": 1,
+        "chartType": "line",
+        "category": "topic",
+        "categoryType": "msg",
+        "xAxisLabel": "",
+        "xAxisProperty": "",
+        "xAxisPropertyType": "timestamp",
+        "xAxisType": "time",
+        "xAxisFormat": "",
+        "xAxisFormatType": "{HH}:{mm}:{ss}",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "",
+        "yAxisProperty": "",
+        "yAxisPropertyType": "property",
+        "ymin": "-45",
+        "ymax": "100",
+        "bins": "",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": "",
+        "removeOlderPoints": "",
+        "colors": [
+            "#d92121",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": "6",
+        "height": "4",
+        "className": "",
+        "interpolation": "linear",
+        "x": 830,
+        "y": 100,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "gauge_umid_v2",
+        "type": "ui-gauge",
+        "z": "tab_wsn_v2",
+        "name": "Umidade",
+        "group": "grp_sensores_v2",
+        "order": 2,
+        "value": "payload",
+        "valueType": "msg",
+        "width": "3",
+        "height": "4",
+        "gtype": "semicircle",
+        "title": "Umidade",
+        "alwaysShowTitle": false,
+        "units": "%",
+        "icon": "water",
+        "prefix": "",
+        "suffix": "%",
+        "segments": [
+            {
+                "from": "0",
+                "color": "#4da6ff",
+                "text": "",
+                "textType": "label"
+            },
+            {
+                "from": "50",
+                "color": "#0066cc",
+                "text": "",
+                "textType": "label"
+            }
+        ],
+        "min": 0,
+        "max": "100",
+        "sizeThickness": "",
+        "sizeGap": "",
+        "sizeKeyThickness": "",
+        "className": "",
+        "x": 780,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "chart_umid_v2",
+        "type": "ui-chart",
+        "z": "tab_wsn_v2",
+        "group": "grp_graf_umid",
+        "name": "Grafico de Umidade",
+        "label": "Histórico Umidade (%)",
+        "order": 1,
+        "chartType": "line",
+        "category": "topic",
+        "categoryType": "msg",
+        "xAxisLabel": "",
+        "xAxisProperty": "",
+        "xAxisPropertyType": "timestamp",
+        "xAxisType": "time",
+        "xAxisFormat": "",
+        "xAxisFormatType": "{HH}:{mm}:{ss}",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "",
+        "yAxisProperty": "",
+        "yAxisPropertyType": "property",
+        "ymin": "0",
+        "ymax": "100",
+        "bins": "",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": "",
+        "removeOlderPoints": "",
+        "colors": [
+            "#4da6ff",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": "6",
+        "height": "4",
+        "className": "",
+        "interpolation": "linear",
+        "x": 820,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "chart_lux_v2",
+        "type": "ui-chart",
+        "z": "tab_wsn_v2",
+        "group": "grp_graf_lux",
+        "name": "Grafico Lux",
+        "label": "Histórico Luminosidade (LDR)",
+        "order": 1,
+        "chartType": "line",
+        "category": "topic",
+        "categoryType": "msg",
+        "xAxisLabel": "",
+        "xAxisProperty": "",
+        "xAxisPropertyType": "timestamp",
+        "xAxisType": "time",
+        "xAxisFormat": "",
+        "xAxisFormatType": "{HH}:{mm}:{ss}",
+        "xmin": "",
+        "xmax": "",
+        "yAxisLabel": "",
+        "yAxisProperty": "",
+        "yAxisPropertyType": "property",
+        "ymin": "0",
+        "ymax": "4095",
+        "bins": "",
+        "stackSeries": false,
+        "pointShape": "circle",
+        "pointRadius": 4,
+        "showLegend": true,
+        "removeOlder": "",
+        "removeOlderPoints": "",
+        "colors": [
+            "#ff9900",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000",
+            "#000000"
+        ],
+        "textColor": [
+            "#666666"
+        ],
+        "textColorDefault": true,
+        "gridColor": [
+            "#e5e5e5"
+        ],
+        "gridColorDefault": true,
+        "width": "6",
+        "height": "4",
+        "className": "",
+        "interpolation": "linear",
+        "x": 790,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "text_time_v2",
+        "type": "ui-text",
+        "z": "tab_wsn_v2",
+        "group": "grp_info_v2",
+        "order": 1,
+        "width": "6",
+        "height": "2",
+        "name": "Ultima Leitura",
+        "label": "Última Leitura:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 800,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "text_tipo_v2",
+        "type": "ui-text",
+        "z": "tab_wsn_v2",
+        "group": "grp_info_v2",
+        "order": 2,
+        "width": "6",
+        "height": "2",
+        "name": "Modo Leitura",
+        "label": "Modo:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "wrapText": false,
+        "className": "",
+        "value": "payload",
+        "valueType": "msg",
+        "x": 790,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "slider_interval_v2",
+        "type": "ui-slider",
+        "z": "tab_wsn_v2",
+        "group": "grp_controle_v2",
+        "name": "Intervalo (min)",
+        "label": "Intervalo de Leitura (min)",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "passthru": true,
+        "outs": "end",
+        "topic": "topic",
+        "topicType": "str",
+        "thumbLabel": "true",
+        "showTicks": true,
+        "min": 1,
+        "max": "60",
+        "step": 1,
+        "className": "",
+        "iconPrepend": "",
+        "iconAppend": "",
+        "color": "",
+        "colorTrack": "",
+        "colorThumb": "",
+        "showTextField": false,
+        "x": 140,
+        "y": 440,
+        "wires": [
+            [
+                "func_create_json_v2"
+            ]
+        ]
+    },
+    {
+        "id": "func_create_json_v2",
+        "type": "function",
+        "z": "tab_wsn_v2",
+        "name": "Cria JSON Config",
+        "func": "var novoIntervalo = msg.payload;\nmsg.payload = {\n    \"intervalo\": novoIntervalo\n};\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 440,
+        "wires": [
+            [
+                "mqtt_out_config_v2",
+                "debug_config_v2"
+            ]
+        ]
+    },
+    {
+        "id": "mqtt_out_config_v2",
+        "type": "mqtt out",
+        "z": "tab_wsn_v2",
+        "name": "Envia Config",
+        "topic": "fazenda/estufa/config",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "broker_local",
+        "x": 590,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "debug_raw_v2",
+        "type": "debug",
+        "z": "tab_wsn_v2",
+        "name": "Raw Data",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 300,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "debug_config_v2",
+        "type": "debug",
+        "z": "tab_wsn_v2",
+        "name": "Config Enviada",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "debug_lux",
+        "type": "debug",
+        "z": "tab_wsn_v2",
+        "name": "Check Lux",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 790,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "broker_local",
+        "type": "mqtt-broker",
+        "name": "Mosquitto Local",
+        "broker": "localhost",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "grp_sensores_v2",
+        "type": "ui-group",
+        "name": "Sensores",
+        "page": "page_dashboard_v2",
+        "width": "6",
+        "height": "1",
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "grp_graf_temp",
+        "type": "ui-group",
+        "name": "Gráfico de Temperatura",
+        "page": "page_dashboard_v2",
+        "width": "6",
+        "height": "1",
+        "order": 2,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "grp_graf_umid",
+        "type": "ui-group",
+        "name": "Gráfico de Umidade",
+        "page": "page_dashboard_v2",
+        "width": "6",
+        "height": "1",
+        "order": 4,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "grp_graf_lux",
+        "type": "ui-group",
+        "name": "Gráfico Lux",
+        "page": "page_dashboard_v2",
+        "width": "6",
+        "height": "1",
+        "order": 6,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "grp_info_v2",
+        "type": "ui-group",
+        "name": "Informações",
+        "page": "page_dashboard_v2",
+        "width": "6",
+        "height": "4",
+        "order": 3,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "grp_controle_v2",
+        "type": "ui-group",
+        "name": "Controle",
+        "page": "page_dashboard_v2",
+        "width": "6",
+        "height": "5",
+        "order": 5,
+        "showTitle": true,
+        "className": "",
+        "visible": "true",
+        "disabled": "false",
+        "groupType": "default"
+    },
+    {
+        "id": "page_dashboard_v2",
+        "type": "ui-page",
+        "name": "Fazenda Inteligente",
+        "ui": "ui_base_v2",
+        "path": "/dashboard",
+        "icon": "home",
+        "layout": "grid",
+        "theme": "default",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": true,
+        "disabled": false
+    },
+    {
+        "id": "ui_base_v2",
+        "type": "ui-base",
+        "name": "WSN Monitor",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 5,
+        "showDisconnectNotification": true,
+        "allowInstall": true
+    },
+    {
+        "id": "61e740e06b13c8d1",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@flowfuse/node-red-dashboard": "1.30.1"
+        }
+    }
+]

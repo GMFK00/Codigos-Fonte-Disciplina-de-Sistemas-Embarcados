@@ -111,6 +111,63 @@ O projeto é dividido em três nós principais:
 
 ---
 
+---
+
+## Nota 1 - Trabalho 3: WSN de Monitoramento Ambiental Low-Power com Node-RED
+<details>
+<summary>Nota 1 - Trabalho 3</summary>
+Este projeto finaliza a primeira nota com a implementação de uma <strong>Rede de Sensores Sem Fio (WSN)</strong> focada em eficiência energética e monitoramento remoto. O sistema utiliza transceptores de rádio frequencia (RF) para comunicação entre nós e integra-se à nuvem via MQTT e Node-RED.
+
+### 🎯 Objetivo
+
+Desenvolver uma arquitetura completa de IoT composta por:
+1.  **Nó Sensor (End Device):** Dispositivo alimentado a bateria que opera em ciclos de *Deep Sleep*, acordando apenas para ler sensores, transmitir dados e voltar a dormir.
+2.  **Gateway:** Dispositivo central que recebe os dados via Rádio (RF24), conecta-se ao Wi-Fi e publica as informações em um Broker MQTT.
+3.  **Dashboard:** Interface gráfica no Node-RED para visualização de dados históricos e envio de configurações remotas (alteração do intervalo de leitura).
+
+### ⚙️ Hardware Necessário
+
+*   **Nó Sensor:**
+    *   1x ESP32-S3.
+    *   1x Módulo NRF24L01+ (Comunicação RF 2.4GHz).
+    *   1x Sensor DHT11 (Temperatura e Umidade).
+    *   1x LDR (Luminosidade).
+    *   1x RTC DS3231 (Relógio de Tempo Real para acordar o ESP32).
+    *   1x Push Button (Interrupção externa).
+*   **Gateway:**
+    *   1x ESP32-S3.
+    *   1x Módulo NRF24L01+.
+*   **Servidor:**
+    *   Broker MQTT (Mosquitto).
+    *   Node-RED.
+
+### 📚 Software e Bibliotecas
+
+*   **RF24:** Para controle dos módulos de rádio NRF24L01+.
+*   **RTClib:** Para comunicação I2C com o módulo DS3231.
+*   **DHT Sensor Library:** Para leitura do sensor de temperatura e umidade.
+*   **ArduinoJson & PubSubClient:** Para manipulação de dados JSON e comunicação MQTT no Gateway.
+*   **ESP32_WS2812_Lib:** Indicação visual de status no Gateway.
+
+### 💡 Funcionalidades Implementadas
+
+*   **Eficiência Energética (Deep Sleep):** O Nó Sensor permanece desligado a maior parte do tempo. Ele é acordado por um alarme programado no RTC (via pino SQW) ou por acionamento manual (Botão).
+*   **Comunicação Bidirecional via ACK:** O Gateway envia configurações (ex: novo tempo de intervalo) para o Sensor embutidas na mensagem de confirmação de recebimento (ACK Payload), eliminando a necessidade do Sensor ficar ouvindo o rádio constantemente.
+*   **Monitoramento e Controle Remoto:** O Node-RED exibe gráficos de temperatura, umidade e luminosidade, e permite alterar o intervalo de envio do sensor através de um slider.
+
+### 🚀 Como Usar
+
+1.  **Infraestrutura:** Inicie o Broker MQTT e o Node-RED. Importe o arquivo `flows.json` no Node-RED.
+2.  **Gateway:** Carregue o código `WSN_Monitoramento_Ambiental_Gateway.ino`. Certifique-se de configurar o Wi-Fi e IP do Broker.
+3.  **Sensor:** Carregue o código `WSN_Monitoramento_Ambiental_No_Sensor.ino`. Conecte o RTC e os sensores conforme o pinout.
+4.  **Operação:**
+    *   O Gateway indicará conexão via LED RGB (Verde = Pronto).
+    *   O Sensor enviará dados e dormirá.
+    *   No Node-RED, visualize os dados. Altere o slider de intervalo: na próxima vez que o sensor acordar e enviar dados, ele receberá o novo intervalo e reprogramará o RTC automaticamente.
+</details>
+
+---
+
 ## Próximos Trabalhos
 
 A pasta para o **Trabalho 3** e as demais (`Nota 2`, `Nota 3`) serão preenchidas conforme os próximos projetos da disciplina forem desenvolvidos.

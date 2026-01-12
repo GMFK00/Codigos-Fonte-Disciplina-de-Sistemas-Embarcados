@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Implementação - WSN Monitoramento Ambiental</title>
+    <style>
+        :root {
+            --bg-sidebar: #1e1e1e;
+            --bg-content: #121212;
+            --bg-card: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #007acc;
+            --border: #333333;
+            --code-bg: #2d2d2d;
+            --code-text: #d4d4d4;
+            --sidebar-width: 300px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-content);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* --- SIDEBAR --- */
+        nav {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) var(--bg-sidebar);
+        }
+
+        nav h1 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        nav .subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        nav h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        nav ul { list-style: none; }
+        
+        nav a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 6px 0;
+            transition: 0.2s;
+        }
+
+        nav a:hover {
+            color: #fff;
+            padding-left: 5px;
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            margin-left: var(--sidebar-width);
+            padding: 40px 60px;
+            width: 100%;
+            max-width: 1600px;
+        }
+
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin: 30px 0 15px 0;
+            color: var(--accent);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin: 20px 0 10px 0;
+            color: #fff;
+            background: #252526;
+            padding: 8px 12px;
+            border-left: 4px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        p { margin-bottom: 15px; color: var(--text-secondary); }
+
+        /* --- TABLES --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #252526;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #2a2a2a; }
+
+        /* --- CODE BLOCKS --- */
+        pre {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            color: var(--code-text);
+            font-size: 0.9rem;
+        }
+
+        .inline-code {
+            background-color: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #ce9178;
+        }
+
+        /* Syntax Highlighting Colors */
+        .kwd { color: #569cd6; font-weight: bold; } /* Keyword */
+        .type { color: #4ec9b0; } /* Type */
+        .func { color: #dcdcaa; } /* Function */
+        .var { color: #9cdcfe; } /* Variable */
+        .num { color: #b5cea8; } /* Number */
+        .str { color: #ce9178; } /* String */
+        .com { color: #6a9955; font-style: italic; } /* Comment */
+
+        /* --- BADGES --- */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-right: 8px;
+        }
+        .b-hw { background: #d35400; color: #fff; }
+        .b-soft { background: #2980b9; color: #fff; }
+        .b-proto { background: #8e44ad; color: #fff; }
+        .b-warn { background: #c0392b; color: #fff; }
+
+        /* --- LISTS --- */
+        ul { margin-left: 20px; margin-bottom: 20px; color: var(--text-secondary); }
+        li { margin-bottom: 8px; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1000px) {
+            body { flex-direction: column; }
+            nav { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--border); }
+            main { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA LATERAL -->
+    <nav>
+        <h1>Implementação WSN</h1>
+        <div class="subtitle">Detalhamento Técnico e Montagem</div>
+
+        <h3>Montagem Física</h3>
+        <ul>
+            <li><a href="#hw-gateway">Hardware: Gateway</a></li>
+            <li><a href="#hw-sensor">Hardware: Nó Sensor</a></li>
+            <li><a href="#hw-partic">Particularidades de Montagem</a></li>
+        </ul>
+
+        <h3>Tecnologias</h3>
+        <ul>
+            <li><a href="#tech-rf">Rádio Frequência (nRF24)</a></li>
+            <li><a href="#tech-esp">Funcionalidades ESP32-S3</a></li>
+            <li><a href="#tech-soft">Node-RED e MQTT</a></li>
+        </ul>
+
+        <h3>Lógica do Projeto</h3>
+        <ul>
+            <li><a href="#logic-sensor">Ciclo de Vida do Sensor</a></li>
+            <li><a href="#logic-gateway">Processamento no Gateway</a></li>
+        </ul>
+
+        <h3>Considerações Finais</h3>
+        <ul>
+            <li><a href="#limitacoes">Limitações da Arquitetura</a></li>
+        </ul>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+        
+        <!-- 1. HARDWARE GATEWAY -->
+        <section id="hw-gateway">
+            <h2>Hardware: Nó Gateway</h2>
+            <p>O Gateway foi montado em uma placa perfurada compacta para atuar como estação base fixa. Ele é alimentado via USB (5V) e permanece sempre ativo.</p>
+            
+            <h4>Lista de Componentes</h4>
+            <table>
+                <thead><tr><th>Componente</th><th>Qtd</th><th>Detalhes</th></tr></thead>
+                <tbody>
+                    <tr><td>ESP32-S3 DevKit</td><td>1</td><td>Microcontrolador principal com Wi-Fi e BLE.</td></tr>
+                    <tr><td>nRF24L01+PA+LNA</td><td>1</td><td>Módulo RF de longo alcance com antena externa SMA.</td></tr>
+                    <tr><td>Placa Perfurada</td><td>1</td><td>Dimensões 5 cm x 7 cm (Ilhada).</td></tr>
+                    <tr><td>Capacitor Eletrolítico</td><td>1</td><td>100µF soldado diretamente no VCC/GND do rádio.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 2. HARDWARE SENSOR -->
+        <section id="hw-sensor">
+            <h2>Hardware: Nó Sensor (Remoto)</h2>
+            <p>O Nó Sensor é um dispositivo autônomo, desenhado para eficiência energética e montado em uma placa maior para acomodar a bateria e sensores.</p>
+
+            <h4>Lista de Componentes</h4>
+            <table>
+                <thead><tr><th>Componente</th><th>Qtd</th><th>Função</th></tr></thead>
+                <tbody>
+                    <tr><td>ESP32-S3 DevKit</td><td>1</td><td>Processamento e controle de Deep Sleep.</td></tr>
+                    <tr><td>nRF24L01+PA+LNA</td><td>1</td><td>Transmissão de dados RF.</td></tr>
+                    <tr><td>Baterias 18650</td><td>2</td><td>Ligadas em série (aprox. 7.4V a 8.4V).</td></tr>
+                    <tr><td>Regulador LM2596</td><td>1</td><td>Step-Down DC-DC para converter 7.4V em 5V estáveis.</td></tr>
+                    <tr><td>RTC DS3231</td><td>1</td><td>Relógio de Tempo Real de alta precisão (I2C).</td></tr>
+                    <tr><td>DHT11</td><td>1</td><td>Sensor de Temperatura e Umidade.</td></tr>
+                    <tr><td>LDR (Modificado)</td><td>1</td><td>Sensor de Luminosidade (Hackeado para saída Analógica).</td></tr>
+                    <tr><td>Botão Push + Resistor</td><td>1</td><td>Botão de interrupção com resistor pull-up de 10kΩ.</td></tr>
+                    <tr><td>Placa Perfurada</td><td>1</td><td>Dimensões 9 cm x 15 cm.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 3. PARTICULARIDADES -->
+        <section id="hw-partic">
+            <h2>Particularidades da Implementação</h2>
+            
+            <h4><span class="badge b-warn">Crítico</span> Estabilidade do Rádio nRF24</h4>
+            <p>Durante os testes, observou-se falha constante no envio de pacotes ("Sem ACK"). O módulo nRF24L01 com amplificador de potência (PA+LNA) gera picos de corrente de até 115mA durante a transmissão.</p>
+            <ul>
+                <li><strong>Problema:</strong> A indutância dos fios e a resposta do regulador interno do ESP32 causavam quedas de tensão momentâneas (voltage drops), resetando o rádio.</li>
+                <li><strong>Solução:</strong> Soldagem de um <strong>capacitor eletrolítico de 100µF</strong> diretamente nos pinos VCC e GND do módulo nRF24. Isso atua como um "tanque" de energia local para suprir os picos de transmissão.</li>
+            </ul>
+
+            <h4><span class="badge b-hw">Hardware Hack</span> Sensor de Luminosidade</h4>
+            <p>O módulo LDR comercial adquirido possuía apenas saída digital (D0) baseada em comparador LM393, funcionando apenas como interruptor (claro/escuro).</p>
+            <ul>
+                <li><strong>Solução:</strong> Foi realizado um "bypass" no circuito do módulo. Soldou-se um fio diretamente no divisor de tensão entre o fotoresistor e o resistor de referência, permitindo a leitura analógica (0-4095) pelo ADC do ESP32.</li>
+            </ul>
+
+            <h4><span class="badge b-proto">Protocolo</span> Configurações de RF</h4>
+            <p>Para garantir o alcance e confiabilidade na comunicação:</p>
+            <ul>
+                <li><strong>Data Rate:</strong> 1 MBPS (Melhor sensibilidade que 2MBPS).</li>
+                <li><strong>Potência:</strong> <code>RF24_PA_MAX</code> (Máxima potência devido à alimentação externa).</li>
+                <li><strong>Retries:</strong> Configurado para <code>(15, 15)</code> - (Delay de 4000µs entre tentativas, 15 tentativas máximas) para lidar com interferências.</li>
+            </ul>
+        </section>
+
+        <!-- 4. TECNOLOGIAS -->
+        <section id="tech-rf">
+            <h2>Tecnologias: RF e ShockBurst</h2>
+            <p>A comunicação utiliza o protocolo proprietário da Nordic Semiconductor, o <strong>Enhanced ShockBurst™</strong>.</p>
+            <ul>
+                <li><strong>ACK Automático:</strong> O hardware do rádio lida automaticamente com a verificação de integridade (CRC) e o envio de confirmação (ACK). O microcontrolador não precisa gerenciar isso via software.</li>
+                <li><strong>ACK Payload (Piggybacking):</strong> Funcionalidade avançada usada no projeto. O Gateway insere dados (configurações de intervalo) no pacote de confirmação. Assim, o Sensor recebe comandos <em>imediatamente</em> após enviar dados, sem precisar entrar em modo de escuta (RX) separado, economizando bateria.</li>
+            </ul>
+        </section>
+
+        <section id="tech-esp">
+            <h2>Funcionalidades do ESP32-S3</h2>
+            <p>O projeto explora recursos específicos do SoC da Espressif:</p>
+            <ul>
+                <li><strong>Deep Sleep & RTC Domain:</strong> O processador principal é desligado. Apenas o coprocessador ULP (Ultra Low Power) e a memória RTC permanecem ativos.</li>
+                <li><strong>RTC GPIO Isolation:</strong> Uso da função <code>rtc_gpio_pullup_en</code> e <code>esp_sleep_pd_config</code> para garantir que os pinos de interrupção (Botão e RTC SQW) não flutuem durante o sono, o que causaria falsos despertares e alto consumo.</li>
+                <li><strong>Wakeup Source (EXT1):</strong> Configuração de máscara de bits para permitir que múltiplos pinos (Botão ou RTC) acordem o dispositivo.</li>
+                <li><strong>RMT Driver:</strong> Controle do LED RGB nativo (WS2812) no pino 48 para feedback visual de status no Gateway.</li>
+            </ul>
+        </section>
+
+        <section id="tech-soft">
+            <h2>Node-RED e Lógica de Nuvem</h2>
+            <p>O backend foi implementado em Node-RED v2.0 (FlowFuse) rodando localmente.</p>
+            <ul>
+                <li><strong>Dashboard 2.0:</strong> Uso da nova biblioteca baseada em Vue.js para interface responsiva.</li>
+                <li><strong>Layout Masonry:</strong> Para evitar problemas de alinhamento visual, os gráficos foram separados em grupos individuais, forçando um layout de duas colunas (Sensores/Controle na esquerda, Gráficos na direita).</li>
+                <li><strong>Correção de Timestamp:</strong> Como o RTC envia o horário local cru, o Node-RED aplica uma correção de fuso horário (+3h ou 10800s) antes de renderizar os gráficos, compensando a interpretação UTC padrão do Javascript.</li>
+            </ul>
+        </section>
+
+        <!-- 5. LÓGICA DO PROJETO -->
+        <section id="logic-sensor">
+            <h2>Lógica de Funcionamento: Nó Sensor</h2>
+            <p>O firmware do sensor não utiliza o loop principal. Ele opera em um ciclo linear "Acordar -> Executar -> Dormir".</p>
+            <ol>
+                <li><strong>Wake-up:</strong> O ESP32 acorda por interrupção externa (Botão pressionado ou pino SQW do RTC indo para LOW).</li>
+                <li><strong>Leitura:</strong> Coleta dados do DHT11, LDR e o Timestamp atual do DS3231.</li>
+                <li><strong>Transmissão:</strong> Envia a estrutura de dados via RF.</li>
+                <li><strong>Recepção (ACK):</strong> Verifica se o Gateway enviou algum comando no pacote de resposta. Se houver um novo intervalo de tempo, atualiza a variável na memória RTC.</li>
+                <li><strong>Agendamento:</strong> Calcula o próximo horário de despertar e programa o alarme do chip DS3231.</li>
+                <li><strong>Hibernação:</strong> Entra em Deep Sleep, desligando todos os periféricos não essenciais.</li>
+            </ol>
+        </section>
+
+        <section id="logic-gateway">
+            <h2>Lógica de Funcionamento: Gateway</h2>
+            <p>O Gateway opera em modo contínuo (Always On).</p>
+            <ul>
+                <li><strong>Loop Principal:</strong> Monitora constantemente a chegada de pacotes RF e a conexão MQTT.</li>
+                <li><strong>Conversão:</strong> Ao receber dados binários do sensor, converte o Timestamp Unix em uma string de data formatada (<code>time.h</code>) e cria um JSON.</li>
+                <li><strong>Publicação:</strong> Envia o JSON para o tópico <code>fazenda/estufa/dados</code>.</li>
+                <li><strong>Controle:</strong> Ao receber um comando do Node-RED (mudança de intervalo), armazena esse valor e o coloca no buffer de transmissão do rádio (<code>writeAckPayload</code>), para que seja entregue na próxima comunicação do sensor.</li>
+            </ul>
+        </section>
+
+        <!-- 6. LIMITAÇÕES -->
+        <section id="limitacoes">
+            <h2>Limitações da Arquitetura</h2>
+            <ul>
+                <li><strong>Colisões de RF:</strong> Como a comunicação é iniciada exclusivamente pelo sensor e não há mecanismo de "Listen Before Talk" (LBT) implementado, se houver múltiplos sensores transmitindo simultaneamente, haverá perda de pacotes.</li>
+                <li><strong>Segurança:</strong> A comunicação RF e MQTT não implementa criptografia (AES/TLS), sendo vulnerável a interceptação local.</li>
+                <li><strong>RTC Drift:</strong> Embora o DS3231 seja preciso, não há sincronização automática via NTP (Network Time Protocol) implementada na versão final para economizar complexidade, exigindo ajuste manual inicial.</li>
+            </ul>
+        </section>
+
+    </main>
+</body>
+</html>

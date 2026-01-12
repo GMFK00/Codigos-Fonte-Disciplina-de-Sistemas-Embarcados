@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WSN de Monitoramento Ambiental Low-Power com Node-RED</title>
+    <style>
+        :root {
+            --bg-sidebar: #1e1e1e;
+            --bg-content: #121212;
+            --bg-card: #1e1e1e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent: #007acc;
+            --border: #333333;
+            --code-bg: #2d2d2d;
+            --code-text: #d4d4d4;
+            --sidebar-width: 300px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-content);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* --- SIDEBAR --- */
+        nav {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            border-right: 1px solid var(--border);
+            padding: 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) var(--bg-sidebar);
+        }
+
+        nav h1 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        nav .subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        nav h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent);
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        nav ul { list-style: none; }
+        
+        nav a {
+            display: block;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 6px 0;
+            transition: 0.2s;
+        }
+
+        nav a:hover {
+            color: #fff;
+            padding-left: 5px;
+        }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            margin-left: var(--sidebar-width);
+            padding: 40px 60px;
+            width: 100%;
+            max-width: 1600px;
+        }
+
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin: 30px 0 15px 0;
+            color: var(--accent);
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin: 20px 0 10px 0;
+            color: #fff;
+            background: #252526;
+            padding: 8px 12px;
+            border-left: 4px solid var(--accent);
+            border-radius: 0 4px 4px 0;
+        }
+
+        p { margin-bottom: 15px; color: var(--text-secondary); }
+
+        /* --- TABLES --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #252526;
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #2a2a2a; }
+
+        /* --- CODE BLOCKS --- */
+        pre {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            color: var(--code-text);
+            font-size: 0.9rem;
+        }
+
+        .inline-code {
+            background-color: rgba(255,255,255,0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #ce9178;
+        }
+
+        /* Syntax Highlighting Colors */
+        .kwd { color: #569cd6; font-weight: bold; } /* Keyword */
+        .type { color: #4ec9b0; } /* Type */
+        .func { color: #dcdcaa; } /* Function */
+        .var { color: #9cdcfe; } /* Variable */
+        .num { color: #b5cea8; } /* Number */
+        .str { color: #ce9178; } /* String */
+        .com { color: #6a9955; font-style: italic; } /* Comment */
+
+        /* --- BADGES --- */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-right: 8px;
+        }
+        .b-in { background: #206a5d; color: #fff; }
+        .b-out { background: #811a1a; color: #fff; }
+        .b-io { background: #a87718; color: #fff; }
+        .b-global { background: #4b2a69; color: #fff; }
+
+        /* --- LISTS --- */
+        ul { margin-left: 20px; margin-bottom: 20px; color: var(--text-secondary); }
+        li { margin-bottom: 8px; }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 1000px) {
+            body { flex-direction: column; }
+            nav { width: 100%; height: auto; position: relative; border-right: none; border-bottom: 1px solid var(--border); }
+            main { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BARRA LATERAL -->
+    <nav>
+        <h1>WSN Monitoramento</h1>
+        <div class="subtitle">Documentação Técnica v1.0</div>
+
+        <h3>Visão Geral</h3>
+        <ul>
+            <li><a href="#arquitetura">Arquitetura do Sistema</a></li>
+            <li><a href="#libs">Bibliotecas e Dependências</a></li>
+        </ul>
+
+        <h3>Hardware</h3>
+        <ul>
+            <li><a href="#hw-gateway">Pinout: Gateway</a></li>
+            <li><a href="#hw-sensor">Pinout: Nó Sensor</a></li>
+        </ul>
+
+        <h3>Protocolo</h3>
+        <ul>
+            <li><a href="#proto-structs">Estruturas de Dados</a></li>
+            <li><a href="#proto-ack">Mecanismo de ACK</a></li>
+        </ul>
+
+        <h3>Firmware: Gateway</h3>
+        <ul>
+            <li><a href="#gw-vars">Variáveis Globais</a></li>
+            <li><a href="#gw-funcs">Funções Principais</a></li>
+            <li><a href="#gw-aux">Funções Auxiliares</a></li>
+        </ul>
+
+        <h3>Firmware: Nó Sensor</h3>
+        <ul>
+            <li><a href="#sn-vars">Variáveis Globais</a></li>
+            <li><a href="#sn-lifecycle">Ciclo de Vida (Setup)</a></li>
+            <li><a href="#sn-funcs">Funções de Controle</a></li>
+        </ul>
+        
+        <h3>Node-RED</h3>
+        <ul>
+            <li><a href="#nr-flow">Fluxo de Dados</a></li>
+        </ul>
+    </nav>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main>
+        
+        <!-- 1. ARQUITETURA -->
+        <section id="arquitetura">
+            <h2>Arquitetura do Sistema</h2>
+            <p>O sistema é composto por uma rede de sensores sem fio (WSN) operando na topologia estrela, onde um nó sensor de baixo consumo comunica-se com um Gateway central.</p>
+            <ul>
+                <li><strong>Protocolo RF:</strong> Proprietário via NRF24L01+ (2.4GHz) com ACK Payloads.</li>
+                <li><strong>Protocolo de Transporte:</strong> MQTT (TCP/IP) sobre Wi-Fi.</li>
+                <li><strong>Aplicação:</strong> Node-RED para visualização e controle.</li>
+            </ul>
+        </section>
+
+        <!-- 2. BIBLIOTECAS -->
+        <section id="libs">
+            <h2>Bibliotecas e Dependências</h2>
+            <table>
+                <thead>
+                    <tr><th>Biblioteca</th><th>Cabeçalho</th><th>Utilização</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>RF24</td><td><code class="inline-code">RF24.h</code></td><td>Controle do transceptor SPI NRF24L01+.</td></tr>
+                    <tr><td>PubSubClient</td><td><code class="inline-code">PubSubClient.h</code></td><td>Cliente MQTT para ESP32.</td></tr>
+                    <tr><td>ArduinoJson</td><td><code class="inline-code">ArduinoJson.h</code></td><td>Serialização e Deserialização de JSON.</td></tr>
+                    <tr><td>RTClib</td><td><code class="inline-code">RTClib.h</code></td><td>Comunicação I2C com RTC DS3231.</td></tr>
+                    <tr><td>DHT Sensor Lib</td><td><code class="inline-code">DHT.h</code></td><td>Leitura de sensores DHT11/22.</td></tr>
+                    <tr><td>ESP32 WS2812</td><td><code class="inline-code">ESP32_WS2812_Lib.h</code></td><td>Controle do LED RGB Built-in (RMT Driver).</td></tr>
+                    <tr><td>ESP-IDF RTC IO</td><td><code class="inline-code">driver/rtc_io.h</code></td><td>Funções de baixo nível para isolamento de GPIO no Deep Sleep.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 3. HARDWARE -->
+        <section id="hw-gateway">
+            <h2>Hardware: Gateway (ESP32-S3)</h2>
+            <p>O Gateway atua como ponte transparente. Não entra em modo de suspensão.</p>
+            <table>
+                <thead><tr><th>Pino / Macro</th><th>GPIO</th><th>Função</th><th>Descrição</th></tr></thead>
+                <tbody>
+                    <tr><td>CE_PIN</td><td>14</td><td><span class="badge b-out">OUTPUT</span></td><td>Chip Enable do Rádio. Controla TX/RX mode.</td></tr>
+                    <tr><td>CSN_PIN</td><td>10</td><td><span class="badge b-out">OUTPUT</span></td><td>Chip Select Not (SPI). Seleção do escravo.</td></tr>
+                    <tr><td>LED_PIN</td><td>48</td><td><span class="badge b-out">OUTPUT</span></td><td>LED RGB Endereçável (WS2812).</td></tr>
+                    <tr><td>MOSI</td><td>11</td><td><span class="badge b-io">SPI</span></td><td>Master Out Slave In.</td></tr>
+                    <tr><td>MISO</td><td>13</td><td><span class="badge b-io">SPI</span></td><td>Master In Slave Out.</td></tr>
+                    <tr><td>SCK</td><td>12</td><td><span class="badge b-io">SPI</span></td><td>Serial Clock.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="hw-sensor">
+            <h2>Hardware: Nó Sensor (ESP32-S3)</h2>
+            <p>Dispositivo de baixo consumo alimentado a bateria.</p>
+            <table>
+                <thead><tr><th>Pino / Macro</th><th>GPIO</th><th>Função</th><th>Descrição</th></tr></thead>
+                <tbody>
+                    <tr><td>DHT_PIN</td><td>4</td><td><span class="badge b-in">INPUT</span></td><td>Dados do sensor DHT11.</td></tr>
+                    <tr><td>LDR_PIN</td><td>5</td><td><span class="badge b-in">ANALOG</span></td><td>Leitura ADC do sensor de luz.</td></tr>
+                    <tr><td>RTC_SQW</td><td>1</td><td><span class="badge b-in">WAKEUP</span></td><td>Pino de interrupção do RTC DS3231 (Active LOW).</td></tr>
+                    <tr><td>BTN_PIN</td><td>2</td><td><span class="badge b-in">WAKEUP</span></td><td>Botão de acionamento manual (Active LOW).</td></tr>
+                    <tr><td>SDA</td><td>8</td><td><span class="badge b-io">I2C</span></td><td>Dados I2C (RTC).</td></tr>
+                    <tr><td>SCL</td><td>9</td><td><span class="badge b-io">I2C</span></td><td>Clock I2C (RTC).</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 4. PROTOCOLO -->
+        <section id="proto-structs">
+            <h2>Protocolo de Comunicação RF</h2>
+            <p>A comunicação utiliza pacotes binários de tamanho fixo (structs C++) para eficiência.</p>
+
+            <h3>DataPacket (Sensor -> Gateway)</h3>
+            <pre><code><span class="kwd">struct</span> <span class="type">DataPacket</span> {
+    <span class="type">uint8_t</span> nodeId;        <span class="com">// Identificador do nó (Ex: 1)</span>
+    <span class="type">float</span> temperatura;     <span class="com">// Valor em graus Celsius</span>
+    <span class="type">float</span> umidade;         <span class="com">// Valor em porcentagem</span>
+    <span class="type">int</span> luminosidade;      <span class="com">// Valor bruto ADC (0-4095)</span>
+    <span class="type">uint32_t</span> timestamp;    <span class="com">// Unix Epoch Time (segundos desde 1970)</span>
+    <span class="type">bool</span> isManualRead;     <span class="com">// true = Botão, false = Timer RTC</span>
+};</code></pre>
+
+            <h3>ConfigPacket (Gateway -> Sensor)</h3>
+            <p>Enviado embutido no pacote de confirmação (ACK Payload).</p>
+            <pre><code><span class="kwd">struct</span> <span class="type">ConfigPacket</span> {
+    <span class="type">uint32_t</span> serverTime;      <span class="com">// Reservado para sincronização futura</span>
+    <span class="type">uint32_t</span> newIntervalMin;  <span class="com">// Novo intervalo de sono (minutos). 0 = sem alteração.</span>
+};</code></pre>
+        </section>
+
+        <!-- 5. FIRMWARE GATEWAY -->
+        <section id="gw-vars">
+            <h2>Firmware Gateway: Variáveis Globais</h2>
+            <table>
+                <thead><tr><th>Tipo</th><th>Nome</th><th>Descrição</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="type">RF24</span></td><td><code class="var">radio</code></td><td>Instância de controle do hardware NRF24L01+.</td></tr>
+                    <tr><td><span class="type">PubSubClient</span></td><td><code class="var">client</code></td><td>Cliente MQTT.</td></tr>
+                    <tr><td><span class="type">ESP32_WS2812</span></td><td><code class="var">strip</code></td><td>Controlador do LED RGB.</td></tr>
+                    <tr><td><span class="type">const uint64_t</span></td><td><code class="var">pipeAddress</code></td><td>Endereço do pipe de comunicação (0xE8E8F0F0E1LL).</td></tr>
+                    <tr><td><span class="type">ConfigPacket</span></td><td><code class="var">pendingConfig</code></td><td>Buffer que armazena a configuração recebida via MQTT, aguardando conexão do sensor.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="gw-funcs">
+            <h2>Firmware Gateway: Funções Principais</h2>
+
+            <h4><span class="func">void</span> setup()</h4>
+            <p>Inicializa o sistema. Configurações críticas:</p>
+            <ul>
+                <li><strong>LED:</strong> Inicializa biblioteca RMT e define cor Vermelha (Boot).</li>
+                <li><strong>WiFi/MQTT:</strong> Chama funções de conexão.</li>
+                <li><strong>Radio:</strong> 
+                    <ul>
+                        <li>Canal 76 (2476 MHz).</li>
+                        <li>Taxa de dados 1MBPS.</li>
+                        <li><code>enableAckPayload()</code>: Habilita envio de dados no ACK.</li>
+                        <li><code>writeAckPayload()</code>: Pré-carrega o buffer com dados vazios para a primeira transação.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h4><span class="func">void</span> loop()</h4>
+            <p>Loop infinito de processamento:</p>
+            <ol>
+                <li>Verifica conexão MQTT. Se cair, chama <code>reconnect()</code>.</li>
+                <li>Executa <code>client.loop()</code> para manter Keep-Alive do MQTT.</li>
+                <li>Verifica <code>radio.available()</code>. Se houver dados:
+                    <ul>
+                        <li>Lê o <code>DataPacket</code>.</li>
+                        <li>Altera LED para Azul (Recebendo).</li>
+                        <li>Converte Timestamp Unix para formato legível (struct tm).</li>
+                        <li>Imprime log na Serial.</li>
+                        <li>Chama <code>publicarDadosMQTT()</code>.</li>
+                        <li>Recarrega o buffer de ACK com <code>pendingConfig</code>.</li>
+                        <li>Limpa <code>pendingConfig.newIntervalMin</code> para evitar reenvio duplicado.</li>
+                    </ul>
+                </li>
+            </ol>
+
+            <h4><span class="func">void</span> mqtt_callback(<span class="type">char*</span> topic, <span class="type">byte*</span> payload, <span class="type">uint</span> length)</h4>
+            <p>Callback disparado assincronamente quando o Broker envia uma mensagem para o tópico subscrito.</p>
+            <ul>
+                <li>Deserializa o JSON recebido.</li>
+                <li>Verifica se existe a chave <code>"intervalo"</code>.</li>
+                <li>Se existir, atualiza <code>pendingConfig.newIntervalMin</code>.</li>
+                <li>Chama <code>radio.writeAckPayload</code> imediatamente para garantir que a próxima comunicação do sensor já pegue o novo valor.</li>
+            </ul>
+        </section>
+
+        <section id="gw-aux">
+            <h2>Firmware Gateway: Funções Auxiliares</h2>
+
+            <h4><span class="func">void</span> publicarDadosMQTT(<span class="type">DataPacket</span> d)</h4>
+            <p>Converte a estrutura binária C++ em JSON string.</p>
+            <ul>
+                <li>Cria documento <code>StaticJsonDocument&lt;256&gt;</code>.</li>
+                <li>Mapeia campos: node, temp, umid, lux, ts, tipo.</li>
+                <li>Publica no tópico <code>fazenda/estufa/dados</code>.</li>
+            </ul>
+
+            <h4><span class="func">void</span> setup_wifi()</h4>
+            <p>Tenta conectar ao Wi-Fi em loop bloqueante (while). Imprime pontos na serial até conectar.</p>
+
+            <h4><span class="func">void</span> reconnect()</h4>
+            <p>Gerencia reconexão MQTT.</p>
+            <ul>
+                <li>Entra em loop enquanto <code>!client.connected()</code>.</li>
+                <li>Tenta conectar com ID "ESP32_Gateway_WSN".</li>
+                <li>Se conectar, subscreve ao tópico <code>fazenda/estufa/config</code>.</li>
+                <li>Se falhar, aguarda 5 segundos antes de tentar novamente.</li>
+            </ul>
+
+            <h4><span class="func">void</span> setStatusColor(<span class="type">uint8_t</span> r, <span class="type">uint8_t</span> g, <span class="type">uint8_t</span> b)</h4>
+            <p>Wrapper para a biblioteca WS2812. Define a cor do LED no índice 0 e chama <code>show()</code>.</p>
+        </section>
+
+        <!-- 6. FIRMWARE SENSOR -->
+        <section id="sn-vars">
+            <h2>Firmware Sensor: Variáveis e Memória</h2>
+            
+            <h4>Memória RTC (Persistente)</h4>
+            <p>Variáveis marcadas com <code>RTC_DATA_ATTR</code> são salvas na memória RTC Slow Memory, que permanece alimentada durante o Deep Sleep.</p>
+            <table>
+                <thead><tr><th>Tipo</th><th>Nome</th><th>Uso</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="type">uint32_t</span></td><td><code class="var">sleepIntervalMinutes</code></td><td>Armazena o intervalo de sono configurado. Padrão inicial: 1 minuto. Persiste entre resets de Deep Sleep.</td></tr>
+                </tbody>
+            </table>
+
+            <h4>Variáveis Voláteis (RAM)</h4>
+            <p>Reiniciadas a cada ciclo de acordar.</p>
+            <table>
+                <thead><tr><th>Tipo</th><th>Nome</th><th>Uso</th></tr></thead>
+                <tbody>
+                    <tr><td><span class="type">bool</span></td><td><code class="var">acordouPorBotao</code></td><td>Flag para identificar a causa do despertar.</td></tr>
+                    <tr><td><span class="type">DataPacket</span></td><td><code class="var">payload</code></td><td>Estrutura de dados para envio.</td></tr>
+                    <tr><td><span class="type">ConfigPacket</span></td><td><code class="var">receivedConfig</code></td><td>Estrutura para receber resposta do Gateway.</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="sn-lifecycle">
+            <h2>Firmware Sensor: Ciclo de Vida</h2>
+            <p>Devido ao uso de Deep Sleep, a função <code>loop()</code> é vazia. Toda a lógica ocorre no <code>setup()</code>.</p>
+            
+            <h4>Sequência de Execução (Setup):</h4>
+            <ol>
+                <li><strong>Configuração de Energia:</strong> <code>esp_sleep_pd_config</code> mantém o domínio RTC ligado.</li>
+                <li><strong>Inicialização de Pinos:</strong> Configura Botão e SQW como INPUT_PULLUP.</li>
+                <li><strong>Inicialização de Periféricos:</strong> I2C (Wire), DHT, RTC DS3231 e Rádio NRF24.</li>
+                <li><strong>Configuração do Rádio:</strong> Define potência máxima, retries (15 tentativas) e abre pipe de escrita.</li>
+                <li><strong>Lógica Principal:</strong>
+                    <ul>
+                        <li><code>verificarWakeup()</code>: Descobre por que acordou.</li>
+                        <li><code>lerSensores()</code>: Coleta dados ambientais.</li>
+                        <li><code>enviarDados()</code>: Transmite e verifica resposta.</li>
+                        <li><code>agendarProximoAcordar()</code>: Reprograma o RTC.</li>
+                    </ul>
+                </li>
+                <li><strong>Debounce:</strong> Se acordou por botão, aguarda o botão ser solto.</li>
+                <li><strong>Dormir:</strong> Chama <code>entrarEmDeepSleep()</code>.</li>
+            </ol>
+        </section>
+
+        <section id="sn-funcs">
+            <h2>Firmware Sensor: Funções Detalhadas</h2>
+
+            <h4><span class="func">void</span> verificarWakeup()</h4>
+            <p>Identifica a fonte do despertar.</p>
+            <ul>
+                <li>Usa <code>esp_sleep_get_wakeup_cause()</code>.</li>
+                <li>Se a causa for <code>ESP_SLEEP_WAKEUP_EXT1</code> (Múltiplos pinos RTC):
+                    <ul>
+                        <li>Lê a máscara de bits com <code>esp_sleep_get_ext1_wakeup_status()</code>.</li>
+                        <li>Verifica bitwise (<code>&</code>) se o bit do <code>BTN_PIN</code> está ativo.</li>
+                        <li>Define <code>acordouPorBotao = true</code> se for botão, caso contrário assume Timer RTC.</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <h4><span class="func">void</span> lerSensores()</h4>
+            <p>Popula a struct <code>payload</code>.</p>
+            <ul>
+                <li>Lê temperatura e umidade do DHT11. Trata valores <code>NaN</code> como 0.0.</li>
+                <li>Lê luminosidade via <code>analogRead(LDR_PIN)</code>.</li>
+                <li>Obtém data/hora atual do RTC (<code>rtc.now()</code>) e converte para Unix Timestamp.</li>
+                <li>Preenche campo <code>isManualRead</code> baseado na verificação de wakeup.</li>
+            </ul>
+
+            <h4><span class="func">void</span> enviarDados()</h4>
+            <p>Gerencia a transação RF.</p>
+            <ul>
+                <li>Chama <code>radio.write(&payload, sizeof(payload))</code>. Esta função bloqueia até receber ACK ou timeout.</li>
+                <li>Se retornar <code>true</code> (Sucesso):
+                    <ul>
+                        <li>Verifica <code>radio.isAckPayloadAvailable()</code>.</li>
+                        <li>Se houver payload no ACK, lê para a struct <code>receivedConfig</code>.</li>
+                        <li>Se <code>receivedConfig.newIntervalMin > 0</code>, atualiza a variável persistente <code>sleepIntervalMinutes</code>.</li>
+                    </ul>
+                </li>
+                <li>Chama <code>radio.powerDown()</code> para economizar energia imediatamente.</li>
+            </ul>
+
+            <h4><span class="func">void</span> agendarProximoAcordar()</h4>
+            <p>Interage com o DS3231.</p>
+            <ul>
+                <li>Limpa alarmes pendentes (<code>clearAlarm</code>).</li>
+                <li>Calcula o tempo futuro: <code>rtc.now() + TimeSpan(minutos)</code>.</li>
+                <li>Define o <strong>Alarme 1</strong> para disparar quando hora, minuto e segundo coincidirem (Match Date).</li>
+                <li>O disparo do alarme coloca o pino SQW do DS3231 em nível LOW.</li>
+            </ul>
+
+            <h4><span class="func">void</span> entrarEmDeepSleep()</h4>
+            <p>Prepara o ESP32 para desligar.</p>
+            <ul>
+                <li><strong>Isolamento de Pinos:</strong> Usa <code>rtc_gpio_pullup_en()</code> nos pinos BTN e SQW. Isso é crucial para que os pinos não flutuem e consumam energia ou gerem falsos disparos enquanto o núcleo digital está desligado.</li>
+                <li><strong>Configuração de Wakeup:</strong> <code>esp_sleep_enable_ext1_wakeup(mask, ESP_EXT1_WAKEUP_ANY_LOW)</code>. Configura o ESP32 para acordar se qualquer um dos pinos da máscara for para nível LOW.</li>
+                <li>Chama <code>esp_deep_sleep_start()</code>. O processador para aqui e só reinicia no <code>setup()</code>.</li>
+            </ul>
+        </section>
+
+        <!-- 7. NODE-RED -->
+        <section id="nr-flow">
+            <h2>Node-RED: Fluxo e Lógica</h2>
+            
+            <h3>Recebimento de Dados (Uplink)</h3>
+            <p>O fluxo inicia no nó <code>mqtt in</code> subscrito em <code>fazenda/estufa/dados</code>.</p>
+            <ul>
+                <li><strong>JSON Parser:</strong> Converte string para objeto JS.</li>
+                <li><strong>Function (Distribuidor):</strong> 
+                    <ul>
+                        <li>Extrai propriedades do payload.</li>
+                        <li>Aplica correção de fuso horário: <code>ts + 10800</code> (Adiciona 3 horas ao timestamp UTC para compensar fuso ou erro de RTC).</li>
+                        <li>Gera data formatada (Locale String).</li>
+                        <li>Retorna array de 5 mensagens para saídas distintas (Temperatura, Umidade, Lux, Texto Data, Texto Tipo).</li>
+                    </ul>
+                </li>
+                <li><strong>Dashboard Nodes:</strong> Gauges e Charts (ui-chart) plotam os valores recebidos.</li>
+            </ul>
+
+            <h3>Envio de Configuração (Downlink)</h3>
+            <p>Controlado pelo nó <code>ui-slider</code>.</p>
+            <ul>
+                <li><strong>Slider:</strong> Gera um valor numérico (1 a 60).</li>
+                <li><strong>Function (Cria JSON):</strong> Cria objeto <code>{"intervalo": valor}</code>.</li>
+                <li><strong>MQTT Out:</strong> Publica no tópico <code>fazenda/estufa/config</code>.</li>
+            </ul>
+        </section>
+
+    </main>
+</body>
+</html>
