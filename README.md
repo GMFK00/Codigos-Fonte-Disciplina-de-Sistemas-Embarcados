@@ -170,7 +170,7 @@ Desenvolver uma arquitetura completa de IoT composta por:
 
 ## Próximos Trabalhos
 
-A pasta para o **Trabalho 3** e as demais (`Nota 2`, `Nota 3`) serão preenchidas conforme os próximos projetos da disciplina forem desenvolvidos.
+As demais pastas (`Nota 2`, `Nota 3`) serão preenchidas conforme os próximos projetos da disciplina forem desenvolvidos.
 
 ## Autores
 
